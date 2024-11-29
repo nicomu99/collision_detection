@@ -17,6 +17,11 @@ add_executable(collision_detection main.cpp
         include/model/Model.hpp
         include/view/View.hpp
         src/model/Model.cpp
-        src/view/View.cpp)
+        src/view/View.cpp
+        include/model/Entity.hpp
+        src/model/Entity.cpp
+        include/model/Vector2d.hpp
+        include/model/Rectangle.hpp
+        src/model/Rectangle.cpp)
 
 target_link_libraries(collision_detection SDL2::SDL2)
