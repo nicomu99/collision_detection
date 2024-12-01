@@ -17,14 +17,16 @@ void Controller::handleInput(bool& running) const {
     SDL_Event event;
 
     while(SDL_PollEvent(&event)) {
-        if(event.type == SDL_QUIT) {
+        if(event.type == SDL_EVENT_QUIT) {
             running = false;
         }
     }
 }
 
-void Controller::renderView() const {
-    view.render(model);
+void Controller::renderView(double alpha) const {
+    view.render(model, alpha);
 }
 
-void Controller::updateModel(double delta_time) const { }
+void Controller::updateModel(double delta_time) {
+    model.update(delta_time);
+}

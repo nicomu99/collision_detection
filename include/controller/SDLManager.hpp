@@ -4,7 +4,7 @@
 
 #ifndef SDLMANAGER_HPP
 #define SDLMANAGER_HPP
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 class SDLManager {
     static constexpr int SCREEN_WIDTH = 1280;

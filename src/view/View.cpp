@@ -3,18 +3,20 @@
 //
 #include "View.hpp"
 
+#include <cmath>
+
 #include "Model.hpp"
 #include "Rectangle.hpp"
 #include "SDLManager.hpp"
 
 View::View(const SDLManager& sdl_manager): renderer(sdl_manager.getRenderer()) { }
 
-void View::render(const Model& model) const {
+void View::render(const Model& model, double alpha) const {
     SDL_RenderClear(renderer);
 
     for(const auto& entity: model.getEntities()) {
         if(auto rect = dynamic_cast<Rectangle*>(entity.get())) {
-            renderRectangle(rect);
+            renderRectangle(rect, alpha);
         }
     }
 
@@ -22,12 +24,12 @@ void View::render(const Model& model) const {
     SDL_RenderPresent(renderer);
 }
 
-void View::renderRectangle(Rectangle* rect) const {
+void View::renderRectangle(Rectangle* rect, double alpha) const {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    Vector2d center = rect->getPosition();
-    int width = rect->getWidth();
-    int height = rect->getHeight();
-    SDL_Rect render_rect = {static_cast<int>(center.x), static_cast<int>(center.y), width, height};
+    Vector2d center = rect->getInterpolatedPosition(alpha);
+    float width = rect->getWidth();
+    float height = rect->getHeight();
+    SDL_FRect render_rect = {static_cast<float>(std::round(center.x)), static_cast<float>(std::round(center.y)), width, height};
 
-    SDL_RenderDrawRect(renderer, &render_rect);
+    SDL_RenderRect(renderer, &render_rect);
 }

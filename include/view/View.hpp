@@ -4,7 +4,7 @@
 
 #ifndef VIEW_HPP
 #define VIEW_HPP
-#include <SDL_render.h>
+#include <SDL3/SDL_render.h>
 
 #include "Rectangle.hpp"
 
@@ -17,8 +17,8 @@ class View {
 public:
     View(const SDLManager& sdl_manager);
 
-    void render(const Model& model) const;
-    void renderRectangle(Rectangle* rect) const;
+    void render(const Model& model, double alpha) const;
+    void renderRectangle(Rectangle* rect, double alpha) const;
     void renderCircle() const;
     void renderTriangle() const;
 };
