@@ -42,6 +42,13 @@ struct Vector2d {
         // Example: element-wise multiplication
         return {this->x * other.x, this->y * other.y};
     }
+
+    Vector2d operator-(const Vector2d& other) const {
+        return {
+            x - other.x,
+            y - other.y
+        };
+    }
 };
 
 #endif //VECTOR2D_HPP

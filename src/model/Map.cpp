@@ -22,6 +22,11 @@ const std::vector<std::vector<Tile>>& Map::getMap() const {
 bool Map::isWallAt(int x, int y) const {
     x = x / TILE_SIZE;
     y = y / TILE_SIZE;
+
+    if(x < 0 || y < 0 || x >= COLS || y >= ROWS) {
+        return WALL;
+    }
+
     return map[y][x].getTileType() == WALL;
 }
 

@@ -15,9 +15,14 @@ class Entity;
 
 class PhysicsEngine {
 public:
+
+    enum class GridEdge { NONE, TOP, BOTTOM, LEFT, RIGHT };
+
     PhysicsEngine();
     static Vector2d calculateDirection(int rotation);
-    static bool isWallCollision(Rectangle* rect, Vector2d position, const Map& map);
+    static bool isWallCollision(Rectangle* rect, Vector2d position, const Map& map, int& x, int& y, GridEdge& hit_edge);
+    static Vector2d getWallNormal(GridEdge grid_edge);
+    static Vector2d calculateTrajectory(Rectangle* rect, double delta_time);
 
     static void calculateMove(Rectangle* rect, const Map& map, double delta_time);
     static void manipulateEntities(std::vector<std::unique_ptr<Entity>>&, const Map& map, double delta_time);

@@ -3,7 +3,7 @@
 //
 #include "Tile.hpp"
 
-Tile::Tile(): Rectangle(), tile_type(GRASS) { }
+Tile::Tile(): tile_type(GRASS) { }
 
 Tile::Tile(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width,
            float rectangle_height, TileType tile_type)
