@@ -19,6 +19,7 @@ public:
     Map();
 
     [[nodiscard]] const std::vector<std::vector<Tile>>& getMap() const;
+    bool isWallAt(int x, int y) const;
 };
 
 #endif //MAP_HPP

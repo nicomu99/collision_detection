@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "Entity.hpp"
+#include "Map.hpp"
 #include "Rectangle.hpp"
 #include "SDLManager.hpp"
 #include "Vector2d.hpp"
@@ -21,7 +22,7 @@ Vector2d PhysicsEngine::calculateDirection(int rotation) {
     };
 }
 
-bool isWallCollision(Rectangle* rect, Vector2d position) {
+bool PhysicsEngine::isWallCollision(Rectangle* rect, Vector2d position, const Map& map) {
     std::vector<Vector2d> corner_points{};
     rect->calculateCornerPoints(corner_points, position);
 
@@ -37,13 +38,21 @@ bool isWallCollision(Rectangle* rect, Vector2d position) {
         left = std::min(left, corner.x);
     }
 
-    return top < 0 || bottom >= (ScreenConstants::SCREEN_HEIGHT - 1) || left < 0 || right >= (ScreenConstants::SCREEN_WIDTH - 1);
+    for(int x = static_cast<int>(left); x <= right; x++) {
+        for(int y = static_cast<int>(top); y <= bottom; y++) {
+            if(map.isWallAt(x, y)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
-void PhysicsEngine::calculateMove(Rectangle* rect, double delta_time) {
+void PhysicsEngine::calculateMove(Rectangle* rect, const Map& map, double delta_time) {
     Vector2d trajectory = rect->getVelocity() * /* calculateDirection(rect->getRotation()) */  rect->getSpeed() * delta_time;
 
-    if(!isWallCollision(rect, rect->getPositionAfterMove(trajectory))) {
+    if(!isWallCollision(rect, rect->getPositionAfterMove(trajectory), map)) {
         rect->move(trajectory);
         return;
     }
@@ -51,10 +60,10 @@ void PhysicsEngine::calculateMove(Rectangle* rect, double delta_time) {
     rect->setVelocity({rect->getVelocity().x * -1, 0});
 }
 
-void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity>>& entities, double delta_time) {
+void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity>>& entities, const Map& map, double delta_time) {
     for (auto& entity: entities) {
         if(auto rect = dynamic_cast<Rectangle*>(entity.get())) {
-            calculateMove(rect, delta_time);
+            calculateMove(rect, map, delta_time);
         }
     }
 }

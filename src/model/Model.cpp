@@ -22,5 +22,5 @@ const Map& Model::getMap() const {
 }
 
 void Model::update(double delta_time) {
-    PhysicsEngine::manipulateEntities(entities, delta_time);
+    PhysicsEngine::manipulateEntities(entities, map, delta_time);
 }

@@ -19,3 +19,9 @@ const std::vector<std::vector<Tile>>& Map::getMap() const {
     return map;
 }
 
+bool Map::isWallAt(int x, int y) const {
+    x = x / TILE_SIZE;
+    y = y / TILE_SIZE;
+    return map[y][x].getTileType() == WALL;
+}
+

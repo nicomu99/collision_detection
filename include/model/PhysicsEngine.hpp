@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "Map.hpp"
 #include "Rectangle.hpp"
 #include "Vector2d.hpp"
 
@@ -16,9 +17,10 @@ class PhysicsEngine {
 public:
     PhysicsEngine();
     static Vector2d calculateDirection(int rotation);
+    static bool isWallCollision(Rectangle* rect, Vector2d position, const Map& map);
 
-    static void calculateMove(Rectangle* entity, double delta_time);
-    static void manipulateEntities(std::vector<std::unique_ptr<Entity>>&, double delta_time);
+    static void calculateMove(Rectangle* rect, const Map& map, double delta_time);
+    static void manipulateEntities(std::vector<std::unique_ptr<Entity>>&, const Map& map, double delta_time);
 };
 
 #endif //PHYSICSENGINE_HPP
