@@ -7,8 +7,8 @@
 #include <SDL3/SDL.h>
 
 namespace ScreenConstants {
-    static constexpr int SCREEN_WIDTH = 1280;
-    static constexpr int SCREEN_HEIGHT = 960;
+    static constexpr int SCREEN_WIDTH = 2560;
+    static constexpr int SCREEN_HEIGHT = 1820;
 }
 
 class SDLManager {

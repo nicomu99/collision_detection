@@ -41,19 +41,14 @@ bool isWallCollision(Rectangle* rect, Vector2d position) {
 }
 
 void PhysicsEngine::calculateMove(Rectangle* rect, double delta_time) {
-    Vector2d trajectory = calculateDirection(rect->getRotation()) * rect->getSpeed() * delta_time;
+    Vector2d trajectory = rect->getVelocity() * /* calculateDirection(rect->getRotation()) */  rect->getSpeed() * delta_time;
 
-    for(int i = 10; i >= 0; i--) {
-        trajectory *= i * 0.1;
-        if(!isWallCollision(rect, rect->getPositionAfterMove(trajectory))) {
-            rect->move(trajectory);
-            return;
-        }
+    if(!isWallCollision(rect, rect->getPositionAfterMove(trajectory))) {
+        rect->move(trajectory);
+        return;
     }
 
-
-
-    rect->move({0, 0});
+    rect->setVelocity({rect->getVelocity().x * -1, 0});
 }
 
 void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity>>& entities, double delta_time) {

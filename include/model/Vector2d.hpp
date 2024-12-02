@@ -36,6 +36,12 @@ struct Vector2d {
         this->y *= x;
         return *this;
     }
+
+    Vector2d operator*(const Vector2d& other) const {
+        // Define how multiplication is handled.
+        // Example: element-wise multiplication
+        return {this->x * other.x, this->y * other.y};
+    }
 };
 
 #endif //VECTOR2D_HPP

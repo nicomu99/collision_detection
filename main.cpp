@@ -36,7 +36,7 @@ int main() {
 
             // FPS calculation (optional)
             double fps = 1.0 / delta_time.count();
-            // std::cout << "Delta time: " << delta_time << " seconds | FPS: " << fps << "\n";
+            std::cout << "Delta time: " << delta_time << " seconds | FPS: " << fps << std::endl;
         }
     } catch (std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;

@@ -22,8 +22,11 @@ public:
     [[nodiscard]] const Vector2d& getPosition() const;
     [[nodiscard]] int getRotation() const;
     [[nodiscard]] double getSpeed() const;
+    [[nodiscard]] const Vector2d& getVelocity() const;
     [[nodiscard]] Vector2d getInterpolatedPosition(double alpha) const;
     [[nodiscard]] Vector2d getPositionAfterMove(Vector2d vector2d) const;
+
+    void setVelocity(Vector2d);
 
     virtual void move(Vector2d vector2d);
     virtual void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) = 0;

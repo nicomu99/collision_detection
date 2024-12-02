@@ -6,7 +6,7 @@
 #include <iostream>
 
 Entity::Entity(Vector2d position, int rotation, Vector2d velocity, double speed)
-    : current_position(position), previous_position(position), rotation(rotation), velocity(velocity), speed(speed) {
+    : current_position(position), previous_position(position), velocity(velocity), speed(speed), rotation(rotation) {
 }
 
 const Vector2d& Entity::getPosition() const {
@@ -21,6 +21,10 @@ double Entity::getSpeed() const {
     return speed;
 }
 
+const Vector2d& Entity::getVelocity() const {
+    return velocity;
+}
+
 Vector2d Entity::getInterpolatedPosition(double alpha) const {
     Vector2d output = previous_position * (1.0 - alpha) + current_position * alpha;
     return output;
@@ -28,6 +32,10 @@ Vector2d Entity::getInterpolatedPosition(double alpha) const {
 
 Vector2d Entity::getPositionAfterMove(Vector2d target) const {
     return current_position + target;
+}
+
+void Entity::setVelocity(Vector2d new_velocity) {
+    velocity = new_velocity;
 }
 
 void Entity::move(Vector2d target) {
