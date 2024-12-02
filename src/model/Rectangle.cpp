@@ -17,7 +17,7 @@ Rectangle::Rectangle(Vector2d position, int rotation, Vector2d velocity, double 
                      float rectangle_height)
     : Entity(position, rotation, velocity, speed), width(rectangle_width),
       height(rectangle_height), top(0), bottom(0), left(0), right(0), corner_points(std::vector<Vector2d>()) {
-    Rectangle::calculateCornerPoints(corner_points, current_position);
+    Rectangle::calculateCornerPointsAndSetBounds(corner_points, current_position);
 }
 
 float Rectangle::getWidth() const {
@@ -48,6 +48,23 @@ const std::vector<Vector2d>& Rectangle::getCornerPoints() const {
     return corner_points;
 }
 
+void Rectangle::calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points, Vector2d center) {
+    points.clear();
+    calculateCornerPoints(points, center);
+
+    bottom = 0;
+    top = ScreenConstants::SCREEN_HEIGHT;
+    left = ScreenConstants::SCREEN_WIDTH;
+    right = 0;
+
+    for(const auto& point: points) {
+        left = std::min(left, point.x);
+        right = std::max(right, point.x);
+        top = std::min(top, point.y);
+        bottom = std::max(bottom, point.y);
+    }
+}
+
 void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) {
     points.clear();
 
@@ -62,18 +79,10 @@ void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d ce
     const auto cos_a = cos(radians);
     const auto sin_a = sin(radians);
 
-    bottom = 0;
-    top = ScreenConstants::SCREEN_HEIGHT;
-    left = ScreenConstants::SCREEN_WIDTH;
-    right = 0;
+
     for (const auto& point: corners) {
         double corner_x = center.x + point.x * cos_a - point.y * sin_a;
         double corner_y = center.y + point.x * sin_a + point.y * cos_a;
-
-        left = std::min(left, corner_x);
-        right = std::max(right, corner_x);
-        top = std::min(top, corner_y);
-        bottom = std::max(bottom, corner_y);
 
         points.emplace_back(corner_x, corner_y);
     }
@@ -82,5 +91,5 @@ void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d ce
 void Rectangle::move(Vector2d target) {
     previous_position = current_position;
     current_position += target;
-    calculateCornerPoints(corner_points, current_position);
+    calculateCornerPointsAndSetBounds(corner_points, current_position);
 }

@@ -32,6 +32,7 @@ public:
     [[nodiscard]] const std::vector<Vector2d>& getCornerPoints() const;
 
     void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) override;
+    void calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points, Vector2d center);
     void move(Vector2d target) override;
 };
 

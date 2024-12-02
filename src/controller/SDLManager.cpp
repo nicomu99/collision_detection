@@ -3,6 +3,7 @@
 //
 #include "SDLManager.hpp"
 
+#include <iostream>
 #include <stdexcept>
 #include <SDL3/SDL_hints.h>
 
@@ -13,13 +14,12 @@ SDLManager::SDLManager() {
 
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-    window = SDL_CreateWindow("Collision Detection",  ScreenConstants::SCREEN_WIDTH, ScreenConstants::SCREEN_HEIGHT , 0);
+    SDL_CreateWindowAndRenderer("Collision Detection", ScreenConstants::SCREEN_WIDTH, ScreenConstants::SCREEN_HEIGHT, 0, &window, &renderer);
     if(!window) {
         SDL_Quit();
         throw std::runtime_error("SDL Window could not be initialized. Error: " + std::string(SDL_GetError()) + "\n");
     }
 
-    renderer = SDL_CreateRenderer(window, nullptr);
     if(!renderer) {
         SDL_DestroyWindow(window);
         SDL_Quit();
