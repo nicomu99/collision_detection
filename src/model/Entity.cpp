@@ -23,8 +23,11 @@ double Entity::getSpeed() const {
 
 Vector2d Entity::getInterpolatedPosition(double alpha) const {
     Vector2d output = previous_position * (1.0 - alpha) + current_position * alpha;
-    // std::cout << "Prev. X: " << previous_position.x << " " << current_position.x << " " << output.x << std::endl;
     return output;
+}
+
+Vector2d Entity::getPositionAfterMove(Vector2d target) const {
+    return current_position + target;
 }
 
 void Entity::move(Vector2d target) {

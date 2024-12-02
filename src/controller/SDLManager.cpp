@@ -7,13 +7,13 @@
 #include <SDL3/SDL_hints.h>
 
 SDLManager::SDLManager() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw std::runtime_error("SDL could not initialize. Error: " + std::string(SDL_GetError()) + "\n");
     }
 
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-    window = SDL_CreateWindow("Collision Detection",  SCREEN_WIDTH, SCREEN_HEIGHT , NULL);
+    window = SDL_CreateWindow("Collision Detection",  ScreenConstants::SCREEN_WIDTH, ScreenConstants::SCREEN_HEIGHT , 0);
     if(!window) {
         SDL_Quit();
         throw std::runtime_error("SDL Window could not be initialized. Error: " + std::string(SDL_GetError()) + "\n");

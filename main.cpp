@@ -24,6 +24,7 @@ int main() {
             accumulator += delta_time.count();
 
             controller.handleInput(running);
+            // controller.updateModel(delta_time.count());
 
             while (accumulator >= target_frame_duration.count()) {
                 controller.updateModel(target_frame_duration.count());

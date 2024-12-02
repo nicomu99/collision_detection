@@ -30,6 +30,12 @@ struct Vector2d {
             y + other.y
         };
     }
+
+    Vector2d& operator*=(double x) {
+        this->x *= x;
+        this->y *= x;
+        return *this;
+    }
 };
 
 #endif //VECTOR2D_HPP

@@ -9,7 +9,7 @@
 
 Model::Model(): entities(std::vector<std::unique_ptr<Entity> >()), physics_engine(PhysicsEngine()) {
     entities.emplace_back(std::make_unique<Rectangle>(
-            Vector2d(100, 100), 0, Vector2d(1, 0), 100, 50, 100)
+            Vector2d(100, 100), 0, Vector2d(0, 0), 300, 50, 100)
     );
 }
 

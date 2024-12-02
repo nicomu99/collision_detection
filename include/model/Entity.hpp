@@ -4,16 +4,18 @@
 
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
+#include <vector>
+
 #include "Vector2d.hpp"
 
 class Entity {
+public:
     Vector2d current_position;
     Vector2d previous_position;
-    int rotation;
     Vector2d velocity;
     double speed;
+    int rotation;
 
-public:
     Entity(Vector2d position, int rotation, Vector2d velocity, double speed);
     virtual ~Entity() = default;
 
@@ -21,8 +23,10 @@ public:
     [[nodiscard]] int getRotation() const;
     [[nodiscard]] double getSpeed() const;
     [[nodiscard]] Vector2d getInterpolatedPosition(double alpha) const;
+    [[nodiscard]] Vector2d getPositionAfterMove(Vector2d vector2d) const;
 
-    void move(Vector2d vector2d);
+    virtual void move(Vector2d vector2d);
+    virtual void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) = 0;
 };
 
 #endif //ENTITY_HPP
