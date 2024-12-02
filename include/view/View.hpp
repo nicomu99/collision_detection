@@ -8,6 +8,7 @@
 
 #include "Rectangle.hpp"
 
+class Map;
 class SDLManager;
 class Model;
 
@@ -18,6 +19,8 @@ public:
     View(const SDLManager& sdl_manager);
 
     void render(const Model& model, double alpha) const;
+    void renderMap(const Map& map) const;
+
     void renderRectangle(Rectangle* rect, double alpha) const;
     void renderCircle() const;
     void renderTriangle() const;

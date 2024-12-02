@@ -8,6 +8,11 @@
 
 #include "SDLManager.hpp"
 
+Rectangle::Rectangle()
+    : Entity({0, 0}, 0, {0, 0}, 0), width(0),
+      height(0), top(0), bottom(0), left(0), right(0), corner_points(std::vector<Vector2d>()) {
+}
+
 Rectangle::Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width,
                      float rectangle_height)
     : Entity(position, rotation, velocity, speed), width(rectangle_width),

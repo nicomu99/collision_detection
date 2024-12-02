@@ -25,6 +25,10 @@ add_executable(collision_detection main.cpp
         include/model/Rectangle.hpp
         src/model/Rectangle.cpp
         include/model/PhysicsEngine.hpp
-        src/model/PhysicsEngine.cpp)
+        src/model/PhysicsEngine.cpp
+        include/model/Map.hpp
+        src/model/Map.cpp
+        include/model/Tile.hpp
+        src/model/Tile.cpp)
 
 target_link_libraries(collision_detection ${SDL3_LIBRARIES})

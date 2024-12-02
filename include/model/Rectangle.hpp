@@ -20,6 +20,7 @@ class Rectangle: public Entity {
     std::vector<Vector2d> corner_points;
 
 public:
+    Rectangle();
     Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width, float rectangle_height);
 
     [[nodiscard]] float getWidth() const;

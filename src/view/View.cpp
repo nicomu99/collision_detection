@@ -10,20 +10,37 @@
 #include "Rectangle.hpp"
 #include "SDLManager.hpp"
 
-View::View(const SDLManager& sdl_manager): renderer(sdl_manager.getRenderer()) { }
+View::View(const SDLManager& sdl_manager): renderer(sdl_manager.getRenderer()) {
+}
 
 void View::render(const Model& model, double alpha) const {
     SDL_RenderClear(renderer);
 
-    for(const auto& entity: model.getEntities()) {
-        if(auto rect = dynamic_cast<Rectangle*>(entity.get())) {
+    renderMap(model.getMap());
+    for (const auto& entity: model.getEntities()) {
+        if (auto rect = dynamic_cast<Rectangle*>(entity.get())) {
             renderRectangle(rect, alpha);
         }
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_RenderPresent(renderer);
+}
+
+void View::renderMap(const Map& map) const {
+    auto tile_map = map.getMap();
+    for (const auto& row: tile_map) {
+        for(const auto& col: row) {
+            if(col.getTileType() == WALL) {
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            } else {
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            }
+            SDL_FRect render_rect(col.getLeft(), col.getTop(), col.getWidth(), col.getHeight());
+            SDL_RenderFillRect(renderer, &render_rect);
+        }
+    }
+
 }
 
 void View::renderRectangle(Rectangle* rect, double alpha) const {
@@ -39,7 +56,7 @@ void View::renderRectangle(Rectangle* rect, double alpha) const {
         {corner_points[2].x, corner_points[2].y, corner_points[3].x, corner_points[3].y},
         {corner_points[3].x, corner_points[3].y, corner_points[0].x, corner_points[0].y},
     };
-    for(const Edge& edge: edges) {
+    for (const Edge& edge: edges) {
         SDL_RenderLine(renderer, edge.x0, edge.y0, edge.x1, edge.y1);
     }
 }
