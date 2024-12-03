@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "SDLManager.hpp"
+#include "Constants.hpp"
 
 Rectangle::Rectangle()
     : Entity({0, 0}, 0, {0, 0}, 0), width(0),
@@ -53,8 +53,8 @@ void Rectangle::calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points,
     calculateCornerPoints(points, center);
 
     bottom = 0;
-    top = ScreenConstants::SCREEN_HEIGHT;
-    left = ScreenConstants::SCREEN_WIDTH;
+    top = Constants::SCREEN_HEIGHT;
+    left = Constants::SCREEN_WIDTH;
     right = 0;
 
     for(const auto& point: points) {

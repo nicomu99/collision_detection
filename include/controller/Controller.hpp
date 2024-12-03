@@ -18,7 +18,7 @@ public:
 
     [[nodiscard]] const SDLManager& getSDLManager() const;
 
-    void handleInput(bool& running) const;
+    static void handleInput(bool& running);
     void renderView(double alpha) const;
     void updateModel(double delta_time);
 };

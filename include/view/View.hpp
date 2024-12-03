@@ -16,7 +16,7 @@ class View {
     SDL_Renderer* renderer;
 
 public:
-    View(const SDLManager& sdl_manager);
+    explicit View(const SDLManager& sdl_manager);
 
     void render(const Model& model, double alpha) const;
     void renderMap(const Map& map) const;

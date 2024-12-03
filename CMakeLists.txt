@@ -4,7 +4,9 @@ project(collision_detection)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
 
-include_directories(${PROJECT_SOURCE_DIR}/include/controller
+include_directories(
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/controller
         ${PROJECT_SOURCE_DIR}/include/view
         ${PROJECT_SOURCE_DIR}/include/model)
 
@@ -29,6 +31,8 @@ add_executable(collision_detection main.cpp
         include/model/Map.hpp
         src/model/Map.cpp
         include/model/Tile.hpp
-        src/model/Tile.cpp)
+        src/model/Tile.cpp
+        include/Constants.hpp
+        include/model/GridEdge.hpp)
 
 target_link_libraries(collision_detection ${SDL3_LIBRARIES})

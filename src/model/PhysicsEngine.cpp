@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "Entity.hpp"
+#include "GridEdge.hpp"
 #include "Map.hpp"
 #include "Rectangle.hpp"
 #include "SDLManager.hpp"
@@ -22,7 +23,7 @@ Vector2d PhysicsEngine::calculateDirection(int rotation) {
     };
 }
 
-bool PhysicsEngine::isWallCollision(Rectangle* rect, Vector2d position, const Map& map, int &x, int &y, GridEdge &hit_edge) {
+bool PhysicsEngine::isWallCollision(Rectangle* rect, Vector2d position, const Map& map, GridEdge &hit_edge) {
     // Calculate all corner points of the rectangle
     std::vector<Vector2d> corner_points{};
     rect->calculateCornerPoints(corner_points, position);
@@ -41,8 +42,8 @@ bool PhysicsEngine::isWallCollision(Rectangle* rect, Vector2d position, const Ma
     }
 
     // Check for collision with the map
-    for (x = static_cast<int>(left); x <= right; x++) {
-        for (y = static_cast<int>(top); y <= bottom; y++) {
+    for (int x = static_cast<int>(left); x <= right; x++) {
+        for (int y = static_cast<int>(top); y <= bottom; y++) {
             if (map.isWallAt(x, y)) {
                 // Check which corner is inside the wall
                 for (const Vector2d& corner : corner_points) {
@@ -91,23 +92,6 @@ bool PhysicsEngine::isWallCollision(Rectangle* rect, Vector2d position, const Ma
     return false;
 }
 
-
-Vector2d PhysicsEngine::getWallNormal(GridEdge grid_edge) {
-    switch(grid_edge) {
-        case GridEdge::TOP:
-            return {0, -1};
-        case GridEdge::BOTTOM:
-            return {0, 1};
-        case GridEdge::LEFT:
-            return {-1, 0};
-        case GridEdge::RIGHT:
-            return {1, 0};
-        case GridEdge::NONE:
-        default:
-            return {0, 0};
-    }
-}
-
 Vector2d PhysicsEngine::calculateTrajectory(Rectangle* rect, double delta_time) {
     return rect->getVelocity() * /* calculateDirection(rect->getRotation()) */  rect->getSpeed() * delta_time;
 }
@@ -115,15 +99,15 @@ Vector2d PhysicsEngine::calculateTrajectory(Rectangle* rect, double delta_time) 
 void PhysicsEngine::calculateMove(Rectangle* rect, const Map& map, double delta_time) {
     Vector2d trajectory = calculateTrajectory(rect, delta_time);
 
-    int x, y = 0;
-    GridEdge grid_edge;
-    if(isWallCollision(rect, rect->getPositionAfterMove(trajectory), map, x, y, grid_edge)) {
+    GridEdge grid_edge(GridEdge::NONE);
+    if(isWallCollision(rect, rect->getPositionAfterMove(trajectory), map, grid_edge)) {
         Vector2d old_velocity = rect->getVelocity();
-        Vector2d wall_normal = getWallNormal(grid_edge);
+        Vector2d wall_normal = grid_edge.toNormal();
 
         Vector2d new_velocity = old_velocity - (old_velocity * wall_normal) * wall_normal * 2;
         rect->setVelocity(new_velocity);
     }
+
     rect->move(trajectory);
 }
 

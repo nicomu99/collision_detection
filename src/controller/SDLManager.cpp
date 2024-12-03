@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <SDL3/SDL_hints.h>
 
+#include "Constants.hpp"
+
 SDLManager::SDLManager() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw std::runtime_error("SDL could not initialize. Error: " + std::string(SDL_GetError()) + "\n");
@@ -14,7 +16,7 @@ SDLManager::SDLManager() {
 
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
-    SDL_CreateWindowAndRenderer("Collision Detection", ScreenConstants::SCREEN_WIDTH, ScreenConstants::SCREEN_HEIGHT, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer("Collision Detection", Constants::SCREEN_WIDTH, Constants::SCREEN_HEIGHT, 0, &window, &renderer);
     if(!window) {
         SDL_Quit();
         throw std::runtime_error("SDL Window could not be initialized. Error: " + std::string(SDL_GetError()) + "\n");

@@ -2,9 +2,10 @@
 // Created by nico on 12/2/24.
 //
 #include "Map.hpp"
+#include <cmath>
 
 Map::Map() : map(ROWS, std::vector<Tile>(COLS)) {
-    auto size = static_cast<double>(TILE_SIZE);
+    constexpr auto size = static_cast<double>(TILE_SIZE);
     for (int row = 0; row < ROWS; ++row) {
         for (int col = 0; col < COLS; ++col) {
             double pos_x = (col * size) + size / 2.0;
@@ -24,9 +25,20 @@ bool Map::isWallAt(int x, int y) const {
     y = y / TILE_SIZE;
 
     if(x < 0 || y < 0 || x >= COLS || y >= ROWS) {
-        return WALL;
+        return true;
     }
 
     return map[y][x].getTileType() == WALL;
+}
+
+bool Map::isWallAt(double x, double y) const {
+    int x_coordinate = static_cast<int>(std::round(x / TILE_SIZE));
+    int y_coordinate = static_cast<int>(std::round(y / TILE_SIZE));
+
+    if(x_coordinate < 0 || x_coordinate >= COLS || y_coordinate < 0 || y_coordinate >= ROWS) {
+        return true;
+    }
+
+    return map[y_coordinate][x_coordinate].getTileType() == WALL;
 }
 

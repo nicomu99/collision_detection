@@ -3,9 +3,6 @@
 //
 #include "View.hpp"
 
-#include <cmath>
-#include <iostream>
-
 #include "Model.hpp"
 #include "Rectangle.hpp"
 #include "SDLManager.hpp"
@@ -30,17 +27,17 @@ void View::render(const Model& model, double alpha) const {
 void View::renderMap(const Map& map) const {
     auto tile_map = map.getMap();
     for (const auto& row: tile_map) {
-        for(const auto& col: row) {
-            if(col.getTileType() == WALL) {
+        for (const auto& col: row) {
+            if (col.getTileType() == WALL) {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             } else {
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             }
-            SDL_FRect render_rect(col.getLeft(), col.getTop(), col.getWidth(), col.getHeight());
+            SDL_FRect render_rect(static_cast<float>(col.getLeft()), static_cast<float>(col.getTop()), col.getWidth(),
+                                  col.getHeight());
             SDL_RenderFillRect(renderer, &render_rect);
         }
     }
-
 }
 
 void View::renderRectangle(Rectangle* rect, double alpha) const {
@@ -57,6 +54,7 @@ void View::renderRectangle(Rectangle* rect, double alpha) const {
         {corner_points[3].x, corner_points[3].y, corner_points[0].x, corner_points[0].y},
     };
     for (const Edge& edge: edges) {
-        SDL_RenderLine(renderer, edge.x0, edge.y0, edge.x1, edge.y1);
+        SDL_RenderLine(renderer, static_cast<float>(edge.x0), static_cast<float>(edge.y0), static_cast<float>(edge.x1),
+                       static_cast<float>(edge.y1));
     }
 }

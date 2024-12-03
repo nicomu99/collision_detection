@@ -13,7 +13,7 @@ const SDLManager& Controller::getSDLManager() const {
     return sdl_manager;
 }
 
-void Controller::handleInput(bool& running) const {
+void Controller::handleInput(bool& running) {
     SDL_Event event;
 
     while(SDL_PollEvent(&event)) {
