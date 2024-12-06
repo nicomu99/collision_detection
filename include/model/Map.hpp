@@ -11,15 +11,18 @@
 #include "SDLManager.hpp"
 
 class Map {
-    static constexpr int TILE_SIZE = 20;
-    static constexpr int ROWS = Constants::SCREEN_HEIGHT / TILE_SIZE;
-    static constexpr int COLS = Constants::SCREEN_WIDTH / TILE_SIZE;
     std::vector<std::vector<Tile>> map;
 
 public:
+    static constexpr int TILE_SIZE = 20;
+    static constexpr int ROWS = Constants::SCREEN_HEIGHT / TILE_SIZE;
+    static constexpr int COLS = Constants::SCREEN_WIDTH / TILE_SIZE;
+
     Map();
 
     [[nodiscard]] const std::vector<std::vector<Tile>>& getMap() const;
+    [[nodiscard]] const Tile& getTile(int x, int y) const;
+
     [[nodiscard]] bool isWallAt(int x, int y) const;
     [[nodiscard]] bool isWallAt(double x, double y) const;
 };

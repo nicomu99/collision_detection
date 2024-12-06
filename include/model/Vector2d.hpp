@@ -4,6 +4,7 @@
 
 #ifndef VECTOR2D_HPP
 #define VECTOR2D_HPP
+#include <cmath>
 
 struct Vector2d {
     double x;

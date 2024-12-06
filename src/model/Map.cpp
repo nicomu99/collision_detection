@@ -3,6 +3,7 @@
 //
 #include "Map.hpp"
 #include <cmath>
+#include <iostream>
 
 Map::Map() : map(ROWS, std::vector<Tile>(COLS)) {
     constexpr auto size = static_cast<double>(TILE_SIZE);
@@ -16,16 +17,43 @@ Map::Map() : map(ROWS, std::vector<Tile>(COLS)) {
     }
 }
 
-const std::vector<std::vector<Tile>>& Map::getMap() const {
+const std::vector<std::vector<Tile> >& Map::getMap() const {
     return map;
+}
+
+const Tile& Map::getTile(int x, int y) const {
+    x = x / TILE_SIZE;
+    y = y / TILE_SIZE;
+
+    if (x < 0) {
+        x = 0;
+    } else if (x >= COLS) {
+        x = COLS - 1;
+    }
+
+    if (y < 0) {
+        y = 0;
+    } else if (y >= ROWS) {
+        y = ROWS - 1;
+    }
+
+    return map[y][x];
 }
 
 bool Map::isWallAt(int x, int y) const {
     x = x / TILE_SIZE;
     y = y / TILE_SIZE;
 
-    if(x < 0 || y < 0 || x >= COLS || y >= ROWS) {
-        return true;
+    if (x < 0) {
+        x = 0;
+    } else if (x >= COLS) {
+        x = COLS - 1;
+    }
+
+    if (y < 0) {
+        y = 0;
+    } else if (y >= ROWS) {
+        y = ROWS - 1;
     }
 
     return map[y][x].getTileType() == WALL;
@@ -35,10 +63,9 @@ bool Map::isWallAt(double x, double y) const {
     int x_coordinate = static_cast<int>(std::round(x / TILE_SIZE));
     int y_coordinate = static_cast<int>(std::round(y / TILE_SIZE));
 
-    if(x_coordinate < 0 || x_coordinate >= COLS || y_coordinate < 0 || y_coordinate >= ROWS) {
+    if (x_coordinate < 0 || x_coordinate >= COLS || y_coordinate < 0 || y_coordinate >= ROWS) {
         return true;
     }
 
     return map[y_coordinate][x_coordinate].getTileType() == WALL;
 }
-

@@ -17,7 +17,7 @@ Rectangle::Rectangle(Vector2d position, int rotation, Vector2d velocity, double 
                      float rectangle_height)
     : Entity(position, rotation, velocity, speed), width(rectangle_width),
       height(rectangle_height), top(0), bottom(0), left(0), right(0), corner_points(std::vector<Vector2d>()) {
-    Rectangle::calculateCornerPointsAndSetBounds(corner_points, current_position);
+    calculateCornerPointsAndSetBounds(corner_points, current_position);
 }
 
 float Rectangle::getWidth() const {
