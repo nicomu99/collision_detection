@@ -4,9 +4,10 @@
 #include "Entity.hpp"
 
 #include <iostream>
+#include <utility>
 
-Entity::Entity(Vector2d position, int rotation, Vector2d velocity, double speed)
-    : current_position(position), previous_position(position), velocity(velocity), speed(speed), rotation(rotation) {
+Entity::Entity(Vector2d position, int rotation, Vector2d velocity, double speed, std::string id)
+    : current_position(position), previous_position(position), velocity(velocity), speed(speed), rotation(rotation), id(std::move(id)) {
 }
 
 const Vector2d& Entity::getPosition() const {

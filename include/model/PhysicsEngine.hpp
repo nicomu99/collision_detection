@@ -19,10 +19,11 @@ public:
     PhysicsEngine();
 
     static Vector2d calculateDirection(int rotation);
-    static bool isWallCollision(Rectangle* rect, Vector2d position, const Map& map, GridEdge& hit_edge);
     static Vector2d calculateTrajectory(Rectangle* rect, double delta_time);
 
-    static void calculateMove(Rectangle* rect, const Map& map, double delta_time, const std::vector<std::unique_ptr<Entity>>& entities);
+    static void resolveMoveConsequences(Rectangle* rect, const Map& map, const std::vector<std::unique_ptr<Entity>>& entities);
+    static void performMove(Rectangle* rect, double delta_time);
+    static void undoMove(Rectangle* entity);
     static void manipulateEntities(std::vector<std::unique_ptr<Entity>>&, const Map& map, double delta_time);
 };
 

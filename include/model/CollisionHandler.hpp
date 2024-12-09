@@ -14,11 +14,11 @@ class Rectangle;
 class CollisionHandler {
 public:
     static void handleRectangleCollision(Rectangle* rect, Rectangle* rectangle);
-    static bool isEntityCollision(Rectangle* rect, Entity* other_entity);
+    static bool checkEntityCollisions(Rectangle* rect, Entity* other_entity);
     static bool checkRectangleCollision(const Rectangle* rect, const Rectangle* rectangle);
 
-    static void handleWallCollisions(Rectangle* rect, Vector2d new_rectangle_position, const Map& map);
-    static bool checkWallCollisions(Rectangle* rect, Vector2d new_rectangle_position, const Map& map, GridEdge& hit_edge);
+    static void handleWallCollisions(Rectangle* rect, const Map& map);
+    static bool checkWallCollisions(Rectangle* rect, const Map& map, GridEdge& hit_edge);
 };
 
 #endif //COLLISIONHANDLER_HPP

@@ -2,6 +2,7 @@
 // Created by nico on 12/8/24.
 //
 #include <CollisionHandler.hpp>
+#include <iostream>
 
 #include "GridEdge.hpp"
 #include "Map.hpp"
@@ -28,12 +29,21 @@ void CollisionHandler::handleRectangleCollision(Rectangle* rect, Rectangle* othe
             collision_normal = Vector2d(0, 1);
     }
 
+    if (collision_normal.x != 0 || collision_normal.y != 0) {
+        std::cout << "=== " << rect->id << " ===" << std::endl;
+        std::cout << "Position: " << rect->current_position.x << " " << rect->current_position.y << std::endl;
+        std::cout << "Velocity: " << rect->velocity.x << " " << rect->velocity.y << std::endl;
+        std::cout << collision_normal.x << " " << collision_normal.y << std::endl;
+        std::cout << "Top: " << rect->getTop() << " Bottom: " << rect->getBottom() << std::endl;
+        std::cout << "Left: " << rect->getLeft() << " Right: " << rect->getRight() << std::endl;
+    }
+
     double normal_component = rect->getVelocity().dot(collision_normal);
     Vector2d new_velocity = rect->getVelocity() - collision_normal * normal_component * 2;
     rect->setVelocity(new_velocity);
 }
 
-bool CollisionHandler::isEntityCollision(Rectangle* rect, Entity* other_entity) {
+bool CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity) {
     // First resolve what type of entity it is
     if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
         if (checkRectangleCollision(rect, other_rect)) {
@@ -49,24 +59,12 @@ bool CollisionHandler::checkRectangleCollision(const Rectangle* rect, const Rect
            rect->getBottom() > other_rect->getTop() && rect->getTop() <= other_rect->getBottom();
 }
 
-bool CollisionHandler::checkWallCollisions(Rectangle* rect, Vector2d new_rectangle_position, const Map& map,
+bool CollisionHandler::checkWallCollisions(Rectangle* rect, const Map& map,
                                            GridEdge& hit_edge) {
-    // Calculate all corner points of the rectangle
-    std::vector<Vector2d> corner_points{};
-    rect->calculateCornerPoints(corner_points, new_rectangle_position);
-
-    double bottom = std::numeric_limits<double>::lowest();
-    double right = std::numeric_limits<double>::lowest();
-    double top = std::numeric_limits<double>::max();
-    double left = std::numeric_limits<double>::max();
-
-    // Determine the bounds of the rectangle
-    for (const Vector2d& corner: corner_points) {
-        bottom = std::max(bottom, corner.y);
-        right = std::max(right, corner.x);
-        top = std::min(top, corner.y);
-        left = std::min(left, corner.x);
-    }
+    double bottom = rect->getBottom();
+    double right = rect->getRight();
+    double top = rect->getTop();
+    double left = rect->getLeft();
 
     // Check for collision with the map
     double max_collision_size = 0.0;
@@ -111,9 +109,9 @@ bool CollisionHandler::checkWallCollisions(Rectangle* rect, Vector2d new_rectang
     return collision_detected;
 }
 
-void CollisionHandler::handleWallCollisions(Rectangle* rect, Vector2d new_rectangle_position, const Map& map) {
+void CollisionHandler::handleWallCollisions(Rectangle* rect, const Map& map) {
     GridEdge grid_edge = GridEdge::NONE;
-    if(checkWallCollisions(rect, new_rectangle_position, map, grid_edge)) {
+    if (checkWallCollisions(rect, map, grid_edge)) {
         Vector2d old_velocity = rect->getVelocity();
         Vector2d wall_normal = grid_edge.toNormal();
 

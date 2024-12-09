@@ -21,7 +21,7 @@ class Rectangle: public Entity {
 
 public:
     Rectangle();
-    Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width, float rectangle_height);
+    Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width, float rectangle_height, std::string id);
 
     [[nodiscard]] float getWidth() const;
     [[nodiscard]] float getHeight() const;
@@ -34,6 +34,7 @@ public:
     void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) override;
     void calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points, Vector2d center);
     void move(Vector2d target) override;
+    void revertMove() override;
 };
 
 #endif //RECTANGLE_HPP

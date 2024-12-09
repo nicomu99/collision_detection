@@ -27,6 +27,13 @@ struct Vector2d {
         return *this;
     }
 
+    Vector2d& operator-=(const Vector2d& other) {
+        x -= other.x;
+        y -= other.y;
+        return *this;
+    }
+
+
     Vector2d operator+(const Vector2d& other) const {
         return {
             x + other.x,
@@ -56,6 +63,7 @@ struct Vector2d {
     [[nodiscard]] double dot(Vector2d other) const {
         return x * other.x + y * other.y;
     }
+
 };
 
 #endif //VECTOR2D_HPP

@@ -5,17 +5,18 @@
 
 #include <cmath>
 #include <iostream>
+#include <utility>
 
 #include "Constants.hpp"
 
 Rectangle::Rectangle()
-    : Entity({0, 0}, 0, {0, 0}, 0), width(0),
+    : Entity({0, 0}, 0, {0, 0}, 0, "no_id"), width(0),
       height(0), top(0), bottom(0), left(0), right(0), corner_points(std::vector<Vector2d>()) {
 }
 
 Rectangle::Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width,
-                     float rectangle_height)
-    : Entity(position, rotation, velocity, speed), width(rectangle_width),
+                     float rectangle_height, std::string id)
+    : Entity(position, rotation, velocity, speed, std::move(id)), width(rectangle_width),
       height(rectangle_height), top(0), bottom(0), left(0), right(0), corner_points(std::vector<Vector2d>()) {
     calculateCornerPointsAndSetBounds(corner_points, current_position);
 }
@@ -91,5 +92,10 @@ void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d ce
 void Rectangle::move(Vector2d target) {
     previous_position = current_position;
     current_position += target;
+    calculateCornerPointsAndSetBounds(corner_points, current_position);
+}
+
+void Rectangle::revertMove() {
+    current_position = previous_position;
     calculateCornerPointsAndSetBounds(corner_points, current_position);
 }
