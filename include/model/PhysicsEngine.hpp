@@ -22,7 +22,7 @@ public:
     static bool isWallCollision(Rectangle* rect, Vector2d position, const Map& map, GridEdge& hit_edge);
     static Vector2d calculateTrajectory(Rectangle* rect, double delta_time);
 
-    static void calculateMove(Rectangle* rect, const Map& map, double delta_time);
+    static void calculateMove(Rectangle* rect, const Map& map, double delta_time, const std::vector<std::unique_ptr<Entity>>& entities);
     static void manipulateEntities(std::vector<std::unique_ptr<Entity>>&, const Map& map, double delta_time);
 };
 

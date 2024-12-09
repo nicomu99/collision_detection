@@ -10,6 +10,8 @@ struct Vector2d {
     double x;
     double y;
 
+    Vector2d(): x(0), y(0) { }
+
     Vector2d(double x, double y): x(x), y(y) { }
 
     Vector2d operator*(double scalar) const {
@@ -49,6 +51,10 @@ struct Vector2d {
             x - other.x,
             y - other.y
         };
+    }
+
+    [[nodiscard]] double dot(Vector2d other) const {
+        return x * other.x + y * other.y;
     }
 };
 
