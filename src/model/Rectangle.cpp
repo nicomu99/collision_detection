@@ -99,3 +99,9 @@ void Rectangle::revertMove() {
     current_position = previous_position;
     calculateCornerPointsAndSetBounds(corner_points, current_position);
 }
+
+void Rectangle::update() {
+    this->velocity = move_result.getUpdatedVelocity();
+    this->current_position = move_result.getNewPosition();
+    calculateCornerPointsAndSetBounds(corner_points, current_position);
+}

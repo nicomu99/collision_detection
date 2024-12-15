@@ -35,6 +35,7 @@ public:
     void calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points, Vector2d center);
     void move(Vector2d target) override;
     void revertMove() override;
+    void update() override;
 };
 
 #endif //RECTANGLE_HPP
