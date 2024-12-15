@@ -64,6 +64,9 @@ struct Vector2d {
         return x * other.x + y * other.y;
     }
 
+    bool operator==(const Vector2d& other) const {
+        return x == other.x && y == other.y;
+    }
 };
 
 #endif //VECTOR2D_HPP

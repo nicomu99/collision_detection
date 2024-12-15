@@ -35,8 +35,16 @@ Vector2d Entity::getPositionAfterMove(Vector2d target) const {
     return current_position + target;
 }
 
+void Entity::setMoveResult(const MoveResult& move_result) {
+    this->move_result = move_result;
+}
+
 void Entity::setVelocity(Vector2d new_velocity) {
     velocity = new_velocity;
+}
+
+void Entity::setCurrentPosition(Vector2d current_position) {
+    this->current_position = current_position;
 }
 
 void Entity::move(Vector2d target) {

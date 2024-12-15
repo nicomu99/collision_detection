@@ -35,6 +35,8 @@ add_executable(collision_detection main.cpp
         include/Constants.hpp
         include/model/GridEdge.hpp
         include/model/CollisionHandler.hpp
-        src/model/CollisionHandler.cpp)
+        src/model/CollisionHandler.cpp
+        include/model/MoveResult.hpp
+        src/model/MoveResult.cpp)
 
 target_link_libraries(collision_detection ${SDL3_LIBRARIES})

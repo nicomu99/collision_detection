@@ -6,11 +6,13 @@
 #include <algorithm>
 #include <iostream>
 #include <cmath>
+#include <unordered_map>
 
 #include "CollisionHandler.hpp"
 #include "Entity.hpp"
 #include "GridEdge.hpp"
 #include "Map.hpp"
+#include "MoveResult.hpp"
 #include "Rectangle.hpp"
 #include "SDLManager.hpp"
 #include "Vector2d.hpp"
@@ -39,21 +41,14 @@ void PhysicsEngine::undoMove(Rectangle* rect) {
 }
 
 void PhysicsEngine::resolveMoveConsequences(Rectangle* rect, const Map& map,
-                                            const std::vector<std::unique_ptr<Entity> >& entities) {
-    CollisionHandler::handleWallCollisions(rect, map);
-
-    // Check for entity collision
-    for (const auto& other_entity: entities) {
-        if (other_entity.get() == rect) continue;
-
-        CollisionHandler::checkEntityCollisions(rect, other_entity.get());
-    }
+                                            const std::vector<std::unique_ptr<Entity> >& entities, double delta_time) {
+    CollisionHandler::checkCollisions(rect, map, entities, delta_time);
 }
 
 
 void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity> >& entities, const Map& map,
                                        double delta_time) {
-    // First calculate the new velocity
+    // Perform hypothetical move
     for (auto& entity: entities) {
         if (auto rect = dynamic_cast<Rectangle*>(entity.get())) {
             performMove(rect, delta_time);
@@ -61,9 +56,11 @@ void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity> >& en
     }
 
     // Then check move consequences
+    // For each entity object, create a movement result
+    // That is used to update the object
     for (auto& entity: entities) {
         if (auto rect = dynamic_cast<Rectangle*>(entity.get())) {
-            resolveMoveConsequences(rect, map, entities);
+            resolveMoveConsequences(rect, map, entities, delta_time);
         }
     }
 
@@ -71,7 +68,8 @@ void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity> >& en
     for (auto& entity: entities) {
         if (auto rect = dynamic_cast<Rectangle*>(entity.get())) {
             undoMove(rect);
-            performMove(rect, delta_time);
+            // performMove(rect, delta_time);
+            rect->update();
         }
     }
 }
