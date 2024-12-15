@@ -6,21 +6,21 @@
 #include "Rectangle.hpp"
 
 Model::Model(): map(Map()), entities(std::vector<std::unique_ptr<Entity> >()), physics_engine(PhysicsEngine()) {
-    /*entities.emplace_back(std::make_unique<Rectangle>(
-            Vector2d(400, 400), 0, Vector2d(-1, 0), 1000, 100, 200, "Large Object")
-    );*/
-
-    /*entities.emplace_back(std::make_unique<Rectangle>(
-            Vector2d(1200, 450), 0, Vector2d(1, 0), 1000, 100, 200)
-    );*/
-
     entities.emplace_back(std::make_unique<Rectangle>(
-            Vector2d(600, 750), 90, Vector2d(1, 1), 1200, 100, 100, "Small Object")
+            Vector2d(500, 500), 0, Vector2d(-1, 0), 1000, 100, 400, "Large Object")
     );
 
-    /*entities.emplace_back(std::make_unique<Rectangle>(
-        Vector2d(120, 120), 0, Vector2d(0, -1), 1200, 100, 100)
-    );*/
+    entities.emplace_back(std::make_unique<Rectangle>(
+            Vector2d(1200, 450), 0, Vector2d(1, 0), 1000, 100, 200, "Other Object")
+    );
+
+    entities.emplace_back(std::make_unique<Rectangle>(
+            Vector2d(1000, 500), 0, Vector2d(1, 0), 1000, 100, 100, "Small Object")
+    );
+
+    entities.emplace_back(std::make_unique<Rectangle>(
+            Vector2d(120, 700), 0, Vector2d(0, -1), 1000, 100, 500, "Negative Velocity Object")
+    );
 }
 
 const std::vector<std::unique_ptr<Entity> >& Model::getEntities() const {

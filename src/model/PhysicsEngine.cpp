@@ -42,7 +42,7 @@ void PhysicsEngine::undoMove(Rectangle* rect) {
 
 void PhysicsEngine::resolveMoveConsequences(Rectangle* rect, const Map& map,
                                             const std::vector<std::unique_ptr<Entity> >& entities, double delta_time) {
-    CollisionHandler::checkCollisions(rect, map, entities, delta_time);
+
 }
 
 
@@ -59,9 +59,7 @@ void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity> >& en
     // For each entity object, create a movement result
     // That is used to update the object
     for (auto& entity: entities) {
-        if (auto rect = dynamic_cast<Rectangle*>(entity.get())) {
-            resolveMoveConsequences(rect, map, entities, delta_time);
-        }
+        CollisionHandler::checkCollisions(entity.get(), map, entities, delta_time);
     }
 
     // Overwrite move

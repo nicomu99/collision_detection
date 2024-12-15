@@ -10,7 +10,7 @@
 #include "Rectangle.hpp"
 #include "Tile.hpp"
 
-void CollisionHandler::handleRectangleCollision(Rectangle* rect, Rectangle* other_rect) {
+void CollisionHandler::handleRectangleCollision(Rectangle* rect, Rectangle* other_rect, MoveResult& move_result) {
     double overlap_x = std::min(rect->getRight(), other_rect->getRight()) - std::max(
                            rect->getLeft(), other_rect->getLeft());
     double overlap_y = std::min(rect->getBottom(), other_rect->getBottom()) - std::max(
@@ -30,37 +30,27 @@ void CollisionHandler::handleRectangleCollision(Rectangle* rect, Rectangle* othe
             collision_normal = Vector2d(0, 1);
     }
 
-    if (collision_normal.x != 0 || collision_normal.y != 0) {
-        std::cout << "=== " << rect->id << " ===" << std::endl;
-        std::cout << "Position: " << rect->current_position.x << " " << rect->current_position.y << std::endl;
-        std::cout << "Velocity: " << rect->velocity.x << " " << rect->velocity.y << std::endl;
-        std::cout << collision_normal.x << " " << collision_normal.y << std::endl;
-        std::cout << "Top: " << rect->getTop() << " Bottom: " << rect->getBottom() << std::endl;
-        std::cout << "Left: " << rect->getLeft() << " Right: " << rect->getRight() << std::endl;
-    }
-
     double normal_component = rect->getVelocity().dot(collision_normal);
     Vector2d new_velocity = rect->getVelocity() - collision_normal * normal_component * 2;
-    rect->setVelocity(new_velocity);
+    move_result.setUpdatedVelocity(new_velocity);
 }
 
-bool CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity) {
-    // First resolve what type of entity it is
-    if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
-        if (isCollision(rect, other_rect)) {
-            handleRectangleCollision(rect, other_rect);
-        }
-    }
-
-    return false;
-}
-
-bool CollisionHandler::isCollision(const Rectangle* rect, const Rectangle* other_rect) {
+bool CollisionHandler::isEntityCollision(const Rectangle* rect, const Rectangle* other_rect) {
     return rect->getRight() > other_rect->getLeft() && rect->getLeft() <= other_rect->getRight() &&
            rect->getBottom() > other_rect->getTop() && rect->getTop() <= other_rect->getBottom();
 }
 
-bool CollisionHandler::checkWallCollisions(Rectangle* rect, const Map& map,
+void CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result) {
+    // First resolve what type of entity it is
+    if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
+        if (isEntityCollision(rect, other_rect)) {
+            handleRectangleCollision(rect, other_rect, move_result);
+        }
+    }
+
+}
+
+bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
                                            GridEdge& hit_edge, Tile& collision_tile) {
     double top = rect->getTop();
     double bottom = rect->getBottom();
@@ -149,7 +139,7 @@ void CollisionHandler::handleWallCollisions(Rectangle* rect, const Map& map, Mov
     Tile collision_tile;
     Vector2d new_position = rect->getPosition();
 
-    if (checkWallCollisions(rect, map, grid_edge, collision_tile)) {
+    if (isWallCollision(rect, map, grid_edge, collision_tile)) {
         Vector2d wall_normal = grid_edge.toNormal();
         new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
         double collision_time = computeWallCollisionPosition(rect, collision_tile, grid_edge, delta_time);
@@ -160,18 +150,21 @@ void CollisionHandler::handleWallCollisions(Rectangle* rect, const Map& map, Mov
     move_result.setNewPosition(new_position);
 }
 
-void CollisionHandler::checkCollisions(Rectangle* rect, const Map& map,
+void CollisionHandler::checkCollisions(Entity* entity, const Map& map,
                                        const std::vector<std::unique_ptr<Entity> >& entities,
                                        double delta_time) {
-    MoveResult move_result(rect->getVelocity(), rect->getPosition());
-    handleWallCollisions(rect, map, move_result, delta_time);
+    MoveResult move_result(entity->getVelocity(), entity->getPosition());
 
-    // Check for entity collision
-    /*for (const auto& other_entity: entities) {
-        if (other_entity.get() == rect) continue;
+    if (auto rect = dynamic_cast<Rectangle*>(entity)) {
+        handleWallCollisions(rect, map, move_result, delta_time);
 
-        checkEntityCollisions(rect, other_entity.get());
-    }*/
+        // Check for entity collision
+        for (const auto& other_entity: entities) {
+            if (other_entity.get() == rect) continue;
 
-    rect->setMoveResult(move_result);
+            checkEntityCollisions(rect, other_entity.get(), move_result);
+        }
+    }
+
+    entity->setMoveResult(move_result);
 }

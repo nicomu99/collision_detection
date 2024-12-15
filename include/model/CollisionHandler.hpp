@@ -17,14 +17,15 @@ class Rectangle;
 
 class CollisionHandler {
 public:
-    static void handleRectangleCollision(Rectangle* rect, Rectangle* rectangle);
-    static bool checkEntityCollisions(Rectangle* rect, Entity* other_entity);
-    static bool isCollision(const Rectangle* rect, const Rectangle* rectangle);
+    static void handleRectangleCollision(Rectangle* rect, Rectangle* rectangle, MoveResult& move_result);
+    static void checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result);
+    static bool isEntityCollision(const Rectangle* rect, const Rectangle* rectangle);
 
-    static bool checkWallCollisions(Rectangle* rect, const Map& map, GridEdge& hit_edge, Tile& collision_tile);
+    static bool isWallCollision(Rectangle* rect, const Map& map, GridEdge& hit_edge, Tile& collision_tile);
     static double computeWallCollisionPosition(Rectangle* rect, const Tile& tile, GridEdge grid_edge, double delta_time);
     static void handleWallCollisions(Rectangle* rect, const Map& map, MoveResult& move_result, double delta_time);
-    static void checkCollisions(Rectangle* rect, const Map& map, const std::vector<std::unique_ptr<Entity>>& vector, double delta_time);
+
+    static void checkCollisions(Entity* entity, const Map& map, const std::vector<std::unique_ptr<Entity>>& vector, double delta_time);
 };
 
 #endif //COLLISIONHANDLER_HPP
