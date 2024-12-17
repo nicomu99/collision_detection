@@ -6,8 +6,8 @@
 #define VIEW_HPP
 #include <SDL3/SDL_render.h>
 
-#include "Rectangle.hpp"
-
+class Rectangle;
+class Circle;
 class Map;
 class SDLManager;
 class Model;
@@ -21,8 +21,8 @@ public:
     void render(const Model& model, double alpha) const;
     void renderMap(const Map& map) const;
 
-    void renderRectangle(Rectangle* rect, double alpha) const;
-    void renderCircle() const;
+    void renderRectangle(const Rectangle* rect, double alpha) const;
+    void renderCircle(const Circle* circle, double alpha) const;
     void renderTriangle() const;
 };
 

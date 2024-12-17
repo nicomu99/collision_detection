@@ -58,7 +58,7 @@ void Rectangle::calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points,
     left = Constants::SCREEN_WIDTH;
     right = 0;
 
-    for(const auto& point: points) {
+    for (const auto& point: points) {
         left = std::min(left, point.x);
         right = std::max(right, point.x);
         top = std::min(top, point.y);
@@ -66,7 +66,7 @@ void Rectangle::calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points,
     }
 }
 
-void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) {
+void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) const {
     points.clear();
 
     std::vector<Vector2d> corners = {
@@ -90,18 +90,16 @@ void Rectangle::calculateCornerPoints(std::vector<Vector2d>& points, Vector2d ce
 }
 
 void Rectangle::move(Vector2d target) {
-    previous_position = current_position;
-    current_position += target;
-    calculateCornerPointsAndSetBounds(corner_points, current_position);
-}
-
-void Rectangle::revertMove() {
-    current_position = previous_position;
+    Entity::move(target);
     calculateCornerPointsAndSetBounds(corner_points, current_position);
 }
 
 void Rectangle::update() {
-    this->velocity = move_result.getUpdatedVelocity();
-    this->current_position = move_result.getNewPosition();
+    Entity::update();
+    calculateCornerPointsAndSetBounds(corner_points, current_position);
+}
+
+void Rectangle::revertMove() {
+    Entity::revertMove();
     calculateCornerPointsAndSetBounds(corner_points, current_position);
 }

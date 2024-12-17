@@ -37,6 +37,8 @@ add_executable(collision_detection main.cpp
         include/model/CollisionHandler.hpp
         src/model/CollisionHandler.cpp
         include/model/MoveResult.hpp
-        src/model/MoveResult.cpp)
+        src/model/MoveResult.cpp
+        include/model/Circle.hpp
+        src/model/Circle.cpp)
 
 target_link_libraries(collision_detection ${SDL3_LIBRARIES})

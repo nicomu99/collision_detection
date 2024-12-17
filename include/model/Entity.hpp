@@ -5,7 +5,6 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 #include <string>
-#include <vector>
 
 #include "MoveResult.hpp"
 #include "Vector2d.hpp"
@@ -34,10 +33,9 @@ public:
     void setVelocity(Vector2d);
     void setCurrentPosition(Vector2d);
 
-    virtual void move(Vector2d vector2d) = 0;
-    virtual void update() = 0;
-    virtual void revertMove() = 0;
-    virtual void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) = 0;
+    virtual void move(Vector2d vector2d);
+    virtual void update();
+    virtual void revertMove();
 };
 
 #endif //ENTITY_HPP

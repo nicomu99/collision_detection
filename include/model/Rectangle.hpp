@@ -5,10 +5,10 @@
 #ifndef RECTANGLE_HPP
 #define RECTANGLE_HPP
 #include <vector>
-
 #include "Entity.hpp"
+#include "Vector2d.hpp"
 
-class Rectangle: public Entity {
+class Rectangle : public Entity {
     float width;
     float height;
 
@@ -21,7 +21,8 @@ class Rectangle: public Entity {
 
 public:
     Rectangle();
-    Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width, float rectangle_height, std::string id);
+    Rectangle(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width,
+              float rectangle_height, std::string id);
 
     [[nodiscard]] float getWidth() const;
     [[nodiscard]] float getHeight() const;
@@ -31,11 +32,12 @@ public:
     [[nodiscard]] double getRight() const;
     [[nodiscard]] const std::vector<Vector2d>& getCornerPoints() const;
 
-    void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) override;
+    void calculateCornerPoints(std::vector<Vector2d>& points, Vector2d center) const;
     void calculateCornerPointsAndSetBounds(std::vector<Vector2d>& points, Vector2d center);
+
     void move(Vector2d target) override;
-    void revertMove() override;
     void update() override;
+    void revertMove() override;
 };
 
 #endif //RECTANGLE_HPP

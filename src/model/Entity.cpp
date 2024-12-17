@@ -51,3 +51,12 @@ void Entity::move(Vector2d target) {
     previous_position = current_position;
     current_position += target;
 }
+
+void Entity::update() {
+    this->velocity = move_result.getUpdatedVelocity();
+    this->current_position = move_result.getNewPosition();
+}
+
+void Entity::revertMove() {
+    current_position = previous_position;
+}

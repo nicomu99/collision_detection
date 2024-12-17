@@ -47,6 +47,12 @@ struct Vector2d {
         return *this;
     }
 
+    Vector2d& operator/=(double length) {
+        this->x /= length;
+        this->y /= length;
+        return *this;
+    }
+
     Vector2d operator*(const Vector2d& other) const {
         // Define how multiplication is handled.
         // Example: element-wise multiplication
@@ -66,6 +72,14 @@ struct Vector2d {
 
     bool operator==(const Vector2d& other) const {
         return x == other.x && y == other.y;
+    }
+
+    [[nodiscard]] double euclidean(Vector2d other) const {
+        return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2));
+    }
+
+    [[nodiscard]] double length() const {
+        return sqrt(pow(x, 2) + pow(y, 2));
     }
 };
 

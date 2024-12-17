@@ -19,14 +19,10 @@ class PhysicsEngine {
 public:
     PhysicsEngine();
 
-    static Vector2d calculateDirection(int rotation);
-    static Vector2d calculateTrajectory(Rectangle* rect, double delta_time);
+    static Vector2d calculateTrajectory(const Entity* rect, double delta_time);
 
-    static void resolveMoveConsequences(Rectangle* rect, const Map& map,
-                                        const std::vector<std::unique_ptr<Entity> >& entities,
-                                        double delta_time);
-    static void performMove(Rectangle* rect, double delta_time);
-    static void undoMove(Rectangle* entity);
+    static void performMove(Entity* rect, double delta_time);
+    static void undoMove(Entity* entity);
     static void manipulateEntities(std::vector<std::unique_ptr<Entity> >&, const Map& map, double delta_time);
 };
 

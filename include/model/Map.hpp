@@ -8,7 +8,6 @@
 
 #include "Constants.hpp"
 #include "Tile.hpp"
-#include "SDLManager.hpp"
 
 class Map {
     std::vector<std::vector<Tile>> map;

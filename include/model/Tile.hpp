@@ -15,7 +15,8 @@ class Tile : public Rectangle {
 
 public:
     Tile();
-    Tile(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width, float rectangle_height, TileType tile_type);
+    Tile(Vector2d position, int rotation, Vector2d velocity, double speed, float rectangle_width,
+         float rectangle_height, TileType tile_type);
 
     [[nodiscard]] TileType getTileType() const;
 };
