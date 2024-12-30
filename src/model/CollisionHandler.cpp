@@ -39,20 +39,55 @@ void CollisionHandler::handleCollision(Rectangle* rect, Rectangle* other_rect, V
 
 void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity,
                                        bool determine_rectangle_velocity) {
-    Vector2d circle_position = circle->getPosition();
+    // ------------------------------------------------------------------------
+    // 1. Get current velocities and positions
+    // ------------------------------------------------------------------------
+    Vector2d vRect = rect->getVelocity(); // velocity of rectangle
+    Vector2d vCircle = circle->getVelocity(); // velocity of circle
 
-    double p_x = std::clamp(circle_position.x, rect->getLeft(), rect->getRight());
-    double p_y = std::clamp(circle_position.y, rect->getTop(), rect->getBottom());
+    Vector2d posRect = rect->getPosition(); // position of rectangle (e.g., center)
+    Vector2d posCircle = circle->getPosition(); // position of circle (center)
 
-    Vector2d collision_point = {p_x, p_y};
-    Vector2d collision_normal = (collision_point - circle_position);
-    collision_normal /= collision_normal.length();
+    // ------------------------------------------------------------------------
+    // 2. Compute the collision normal
+    //    For a more realistic approach, find the actual contact normal.
+    //    Here we do a simple center-to-center vector from rectangle -> circle.
+    // ------------------------------------------------------------------------
+    Vector2d collisionNormal = posCircle - posRect;
+    collisionNormal /= collisionNormal.length(); // make it a unit vector
 
+    // ------------------------------------------------------------------------
+    // 3. Decompose velocities into normal & tangential components
+    // ------------------------------------------------------------------------
+    // Dot products with the normal
+    double vRect_n = vRect.dot(collisionNormal);
+    double vCircle_n = vCircle.dot(collisionNormal);
+
+    // Tangential components (subtract normal component from total velocity)
+    // vt = v - (v.n)n
+    Vector2d vRect_t = vRect - collisionNormal * vRect_n;
+    Vector2d vCircle_t = vCircle - collisionNormal * vCircle_n;
+
+    // ------------------------------------------------------------------------
+    // 4. Resolve collision (perfectly elastic, equal masses)
+    //    => The normal components just swap
+    // ------------------------------------------------------------------------
+    double vRect_n_prime = vCircle_n; // rectangle’s new normal velocity
+    double vCircle_n_prime = vRect_n; // circle’s new normal velocity
+
+    // ------------------------------------------------------------------------
+    // 5. Reconstruct the final velocities
+    // ------------------------------------------------------------------------
+    Vector2d vRectFinal = vRect_t + collisionNormal * vRect_n_prime;
+    Vector2d vCircleFinal = vCircle_t + collisionNormal * vCircle_n_prime;
+
+    // ------------------------------------------------------------------------
+    // 7. Update the 'velocity' output parameter as requested
+    // ------------------------------------------------------------------------
     if (determine_rectangle_velocity) {
-        double normal_component = velocity.dot(collision_normal);
-        velocity = velocity - collision_normal * normal_component * 2;
+        velocity = vRectFinal;
     } else {
-        velocity = rect->getVelocity() * collision_normal * collision_normal;
+        velocity = vCircleFinal;
     }
 }
 
@@ -129,31 +164,42 @@ bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
 
 bool CollisionHandler::isWallCollision(Circle* circle, const Map& map, GridEdge& hit_edge, Tile& collision_tile) {
     double radius = circle->getRadius();
-    Vector2d position = circle->getPosition();
-    auto min_x = static_cast<int>(position.x - radius);
-    auto max_x = static_cast<int>(position.x + radius);
-    auto min_y = static_cast<int>(position.y - radius);
-    auto max_y = static_cast<int>(position.y + radius);
+    Vector2d previous_position = circle->getPreviousPosition();
+    Vector2d current_position = circle->getPosition();
+
+    double old_left = previous_position.x - radius;
+    double old_right = previous_position.x + radius;
+    double old_top = previous_position.y - radius;
+    double old_bottom = previous_position.y + radius;
+
+    double new_left = current_position.x - radius;
+    double new_right = current_position.x + radius;
+    double new_top = current_position.y - radius;
+    double new_bottom = current_position.y + radius;
 
     bool collision_detected = false;
-    for (int x = min_x; x <= max_x; x++) {
-        for (int y = min_y; y <= max_y; y++) {
-            if (map.isWallAt(x, y) && position.euclidean(Vector2d(x, y)) < radius) {
-                const Tile& tile = map.getTile(x, y);
+    for (int x = static_cast<int>(new_left); x <= new_right; x += Map::TILE_SIZE) {
+        for (int y = static_cast<int>(new_top); y <= new_bottom; y += Map::TILE_SIZE) {
+            if (map.isWallAt(x, y)) {
                 collision_detected = true;
+                std::cout << "Old top: " << old_top << " New top: " << new_top << std::endl;
 
-                if (position.x - radius <= tile.getRight() && circle->getVelocity().x < 0) {
-                    hit_edge = GridEdge::RIGHT;
-                } else if (position.x + radius >= tile.getLeft() && circle->getVelocity().x > 0) {
+                const Tile& tile = map.getTile(x, y);
+                if (old_right < tile.getLeft() && new_right >= tile.getLeft()) {
                     hit_edge = GridEdge::LEFT;
-                } else if (position.y - radius <= tile.getBottom() && circle->getVelocity().y < 0) {
+                } else if (old_left > tile.getRight() && new_left <= tile.getRight()) {
+                    hit_edge = GridEdge::RIGHT;
+                } else if (old_bottom < tile.getTop() && new_bottom >= tile.getTop()) {
                     hit_edge = GridEdge::BOTTOM;
-                } else if (position.y + radius >= tile.getTop() && circle->getVelocity().y > 0) {
+                } else if (old_top > tile.getBottom() && new_top <= tile.getBottom()) {
                     hit_edge = GridEdge::TOP;
                 }
             }
         }
     }
+
+    std::cout << "Collision detected: " << collision_detected << std::endl;
+    std::cout << hit_edge.value << std::endl;
 
     return collision_detected;
 }

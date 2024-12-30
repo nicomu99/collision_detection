@@ -14,6 +14,10 @@ const Vector2d& Entity::getPosition() const {
     return current_position;
 }
 
+const Vector2d& Entity::getPreviousPosition() const {
+    return previous_position;
+}
+
 int Entity::getRotation() const {
     return rotation;
 }

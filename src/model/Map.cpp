@@ -40,6 +40,13 @@ const Tile& Map::getTile(int x, int y) const {
     return map[y][x];
 }
 
+const Tile& Map::getTile(double x, double y) const {
+    int cast_x = (int)x;
+    int cast_y = (int)y;
+
+    return getTile(cast_x, cast_y);
+}
+
 bool Map::isWallAt(int x, int y) const {
     x = x / TILE_SIZE;
     y = y / TILE_SIZE;

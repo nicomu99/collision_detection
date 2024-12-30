@@ -21,6 +21,7 @@ public:
 
     [[nodiscard]] const std::vector<std::vector<Tile>>& getMap() const;
     [[nodiscard]] const Tile& getTile(int x, int y) const;
+    [[nodiscard]] const Tile& getTile(double x, double y) const;
 
     [[nodiscard]] bool isWallAt(int x, int y) const;
     [[nodiscard]] bool isWallAt(double x, double y) const;

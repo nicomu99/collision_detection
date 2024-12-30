@@ -33,6 +33,11 @@ struct Vector2d {
         return *this;
     }
 
+    Vector2d& operator/(double divisor) {
+        x /= divisor;
+        y /= divisor;
+        return *this;
+    }
 
     Vector2d operator+(const Vector2d& other) const {
         return {

@@ -28,6 +28,7 @@ public:
     virtual ~Entity() = default;
 
     [[nodiscard]] const Vector2d& getPosition() const;
+    [[nodiscard]] const Vector2d& getPreviousPosition() const;
     [[nodiscard]] int getRotation() const;
     [[nodiscard]] double getSpeed() const;
     [[nodiscard]] const Vector2d& getVelocity() const;
