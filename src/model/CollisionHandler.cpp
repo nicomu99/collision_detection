@@ -3,7 +3,6 @@
 //
 #include <CollisionHandler.hpp>
 #include <iostream>
-#include <limits>
 #include <algorithm>
 
 #include "Entity.hpp"
@@ -38,7 +37,8 @@ void CollisionHandler::handleCollision(Rectangle* rect, Rectangle* other_rect, V
     velocity = velocity - collision_normal * normal_component * 2;
 }
 
-void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity) {
+void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity,
+                                       bool determine_rectangle_velocity) {
     Vector2d circle_position = circle->getPosition();
 
     double p_x = std::clamp(circle_position.x, rect->getLeft(), rect->getRight());
@@ -48,63 +48,31 @@ void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d
     Vector2d collision_normal = (collision_point - circle_position);
     collision_normal /= collision_normal.length();
 
-    double normal_component = velocity.dot(collision_normal);
-    velocity = velocity - collision_normal * normal_component * 2;
+    if (determine_rectangle_velocity) {
+        double normal_component = velocity.dot(collision_normal);
+        velocity = velocity - collision_normal * normal_component * 2;
+    } else {
+        velocity = rect->getVelocity() * collision_normal * collision_normal;
+    }
 }
 
-void CollisionHandler::handleCollision(Circle* circle, Rectangle* rect, Vector2d& velocity) {
-    Vector2d circle_position = circle->getPosition();
+void CollisionHandler::handleCollision(Circle* circle, Circle* other_circle, Vector2d& velocity) {
+    Vector2d c1 = circle->getPosition();
+    Vector2d c2 = other_circle->getPosition();
 
-    double p_x = std::clamp(circle_position.x, rect->getLeft(), rect->getRight());
-    double p_y = std::clamp(circle_position.y, rect->getTop(), rect->getBottom());
-
-    Vector2d collision_point = {p_x, p_y};
-    Vector2d collision_normal = (collision_point - circle_position);
+    // Compute collision normal and normalize it
+    Vector2d collision_normal = (c1 - c2);
     collision_normal /= collision_normal.length();
 
-    velocity = rect->getVelocity() * collision_normal * collision_normal;
-}
+    // Compute normal components (scalar values)
+    double normal_component = circle->getVelocity().dot(collision_normal);
+    double normal_component_other = other_circle->getVelocity().dot(collision_normal);
 
-bool CollisionHandler::isEntityCollision(const Rectangle* rect, const Rectangle* other_rect) {
-    return rect->getRight() > other_rect->getLeft() && rect->getLeft() <= other_rect->getRight() &&
-           rect->getBottom() > other_rect->getTop() && rect->getTop() <= other_rect->getBottom();
-}
+    // Compute tangential velocity
+    Vector2d tangential_velocity = circle->getVelocity() - collision_normal * normal_component;
 
-bool CollisionHandler::isEntityCollision(const Circle* circle, const Rectangle* rect) {
-    Vector2d c = circle->getPosition();
-    double radius = circle->getRadius();
-
-    double closest_x = std::max(rect->getLeft(), std::min(c.x, rect->getRight()));
-    double closest_y = std::max(rect->getTop(), std::min(c.y, rect->getBottom()));
-
-    return c.euclidean(Vector2d(closest_x, closest_y)) < radius;
-}
-
-void CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result) {
-    // First resolve what type of entity it is
-    Vector2d velocity = rect->getVelocity();
-    if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
-        if (isEntityCollision(rect, other_rect)) {
-            handleCollision(rect, other_rect, velocity);
-            move_result.setUpdatedVelocity(velocity);
-        }
-    } else if (auto circle = dynamic_cast<Circle*>(other_entity)) {
-        if (isEntityCollision(circle, rect)) {
-            handleCollision(rect, circle, velocity);
-            move_result.setUpdatedVelocity(velocity);
-        }
-    }
-}
-
-void CollisionHandler::checkEntityCollisions(Circle* circle, Entity* other_entity, MoveResult& move_result) {
-    // First resolve what type of entity it is
-    Vector2d velocity = circle->getVelocity();
-    if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
-        if (isEntityCollision(circle, other_rect)) {
-            handleCollision(circle, other_rect, velocity);
-            move_result.setUpdatedVelocity(velocity);
-        }
-    }
+    // Compute resulting velocity after collision
+    velocity = collision_normal * normal_component_other + tangential_velocity;
 }
 
 bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
@@ -255,28 +223,48 @@ void CollisionHandler::handleWallCollisions(Circle* circle, const Map& map, Move
     move_result.setNewPosition(new_position);
 }
 
+void CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result) {
+    // First resolve what type of entity it is
+    Vector2d velocity = rect->getVelocity();
+    if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
+        if (rect->isCollision(other_rect)) {
+            handleCollision(rect, other_rect, velocity);
+            move_result.setUpdatedVelocity(velocity);
+        }
+    } else if (auto circle = dynamic_cast<Circle*>(other_entity)) {
+        if (rect->isCollision(circle)) {
+            handleCollision(rect, circle, velocity, true);
+            move_result.setUpdatedVelocity(velocity);
+        }
+    }
+}
+
+void CollisionHandler::checkEntityCollisions(Circle* circle, Entity* other_entity, MoveResult& move_result) {
+    // First resolve what type of entity it is
+    Vector2d velocity = circle->getVelocity();
+    if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
+        if (circle->isCollision(other_rect)) {
+            handleCollision(other_rect, circle, velocity, false);
+            move_result.setUpdatedVelocity(velocity);
+        }
+    } else if (auto other_circle = dynamic_cast<Circle*>(other_entity)) {
+        if (circle->isCollision(other_circle)) {
+            handleCollision(circle, other_circle, velocity);
+            move_result.setUpdatedVelocity(velocity);
+        }
+    }
+}
+
 void CollisionHandler::checkCollisions(Entity* entity, const Map& map,
                                        const std::vector<std::unique_ptr<Entity> >& entities,
                                        double delta_time) {
     MoveResult move_result(entity->getVelocity(), entity->getPosition());
 
-    if (auto rect = dynamic_cast<Rectangle*>(entity)) {
-        handleWallCollisions(rect, map, move_result, delta_time);
+    entity->handleWallCollisions(map, move_result, delta_time);
+    for (const auto& other_entity: entities) {
+        if (other_entity.get() == entity) continue;
 
-        // Check for entity collision
-        for (const auto& other_entity: entities) {
-            if (other_entity.get() == rect) continue;
-
-            checkEntityCollisions(rect, other_entity.get(), move_result);
-        }
-    } else if (auto circle = dynamic_cast<Circle*>(entity)) {
-        handleWallCollisions(circle, map, move_result, delta_time);
-
-        for (const auto& other_entity: entities) {
-            if (other_entity.get() == circle) continue;
-
-            checkEntityCollisions(circle, other_entity.get(), move_result);
-        }
+        entity->checkEntityCollisions(other_entity.get(), move_result);
     }
 
     entity->setMoveResult(move_result);

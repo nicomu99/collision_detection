@@ -5,9 +5,14 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 #include <string>
+#include <bits/unique_ptr.h>
 
 #include "MoveResult.hpp"
 #include "Vector2d.hpp"
+
+class Circle;
+class Rectangle;
+class Map;
 
 class Entity {
 public:
@@ -36,6 +41,12 @@ public:
     virtual void move(Vector2d vector2d);
     virtual void update();
     virtual void revertMove();
+
+    virtual void handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) = 0;
+    virtual void checkEntityCollisions(Entity* other_entity, MoveResult& move_result) = 0;
+
+    virtual bool isCollision(const Rectangle* rectangle) = 0;
+    virtual bool isCollision(const Circle* circle) = 0;
 };
 
 #endif //ENTITY_HPP

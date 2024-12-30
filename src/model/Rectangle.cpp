@@ -7,6 +7,8 @@
 #include <iostream>
 #include <utility>
 
+#include "Circle.hpp"
+#include "CollisionHandler.hpp"
 #include "Constants.hpp"
 
 Rectangle::Rectangle()
@@ -102,4 +104,27 @@ void Rectangle::update() {
 void Rectangle::revertMove() {
     Entity::revertMove();
     calculateCornerPointsAndSetBounds(corner_points, current_position);
+}
+
+void Rectangle::handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) {
+    CollisionHandler::handleWallCollisions(this, map, move_result, delta_time);
+}
+
+void Rectangle::checkEntityCollisions(Entity* other_entity, MoveResult& move_result) {
+    CollisionHandler::checkEntityCollisions(this, other_entity, move_result);
+}
+
+bool Rectangle::isCollision(const Rectangle* rectangle) {
+    return this->getRight() > rectangle->getLeft() && this->getLeft() <= rectangle->getRight() &&
+       this->getBottom() > rectangle->getTop() && this->getTop() <= rectangle->getBottom();
+}
+
+bool Rectangle::isCollision(const Circle* circle) {
+    Vector2d c = circle->getPosition();
+    double radius = circle->getRadius();
+
+    double closest_x = std::max(this->getLeft(), std::min(c.x, this->getRight()));
+    double closest_y = std::max(this->getTop(), std::min(c.y, this->getBottom()));
+
+    return c.euclidean(Vector2d(closest_x, closest_y)) < radius;
 }

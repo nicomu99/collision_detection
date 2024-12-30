@@ -38,6 +38,12 @@ public:
     void move(Vector2d target) override;
     void update() override;
     void revertMove() override;
+
+    void handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) override;
+    void checkEntityCollisions(Entity* other_entity, MoveResult& move_result) override;
+
+    bool isCollision(const Rectangle* rectangle) override;
+    bool isCollision(const Circle* circle) override;
 };
 
 #endif //RECTANGLE_HPP

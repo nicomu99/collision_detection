@@ -19,14 +19,11 @@ class Rectangle;
 class CollisionHandler {
 public:
     static void handleCollision(Rectangle* rect, Rectangle* rectangle, Vector2d& velocity);
-    static void handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity);
-    static void handleCollision(Circle* circle, Rectangle* rect, Vector2d& velocity);
+    static void handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity, bool determine_rectangle_velocity);
+    static void handleCollision(Circle* circle, Circle* other_circle, Vector2d& velocity);
 
     static void checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result);
     static void checkEntityCollisions(Circle* rect, Entity* other_entity, MoveResult& move_result);
-
-    static bool isEntityCollision(const Rectangle* rect, const Rectangle* rectangle);
-    static bool isEntityCollision(const Circle* circle, const Rectangle* rectangle);
 
     static bool isWallCollision(Rectangle* rect, const Map& map, GridEdge& hit_edge, Tile& collision_tile);
     static bool isWallCollision(Circle* rect, const Map& map, GridEdge& hit_edge, Tile& collision_tile);

@@ -8,7 +8,7 @@
 
 Model::Model(): map(Map()), entities(std::vector<std::unique_ptr<Entity> >()), physics_engine(PhysicsEngine()) {
     entities.emplace_back(std::make_unique<Rectangle>(
-            Vector2d(500, 500), 0, Vector2d(-1, 0), 1000, 100, 400, "Large Object")
+            Vector2d(500, 500), 0, Vector2d(-1, 0), 1000, 100, 100, "Large Object")
     );
 
     entities.emplace_back(std::make_unique<Rectangle>(
@@ -25,6 +25,10 @@ Model::Model(): map(Map()), entities(std::vector<std::unique_ptr<Entity> >()), p
 
     entities.emplace_back(std::make_unique<Circle>(
             Vector2d(120, 1300), 0, Vector2d(0, 1), 1000, 50.0, "Circle")
+    );
+
+    entities.emplace_back(std::make_unique<Circle>(
+        Vector2d(120, 1000), 0, Vector2d(0, -1), 1000, 50.0, "Circle")
     );
 }
 
