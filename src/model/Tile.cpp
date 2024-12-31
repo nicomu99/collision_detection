@@ -14,3 +14,7 @@ Tile::Tile(Vector2d position, int rotation, Vector2d velocity, double speed, flo
 TileType Tile::getTileType() const {
     return tile_type;
 }
+
+bool Tile::isWall() const {
+    return tile_type == WALL;
+}

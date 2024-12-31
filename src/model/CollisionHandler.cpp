@@ -164,42 +164,41 @@ bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
 
 bool CollisionHandler::isWallCollision(Circle* circle, const Map& map, GridEdge& hit_edge, Tile& collision_tile) {
     double radius = circle->getRadius();
-    Vector2d previous_position = circle->getPreviousPosition();
-    Vector2d current_position = circle->getPosition();
+    Vector2d center = circle->getPosition();
 
-    double old_left = previous_position.x - radius;
-    double old_right = previous_position.x + radius;
-    double old_top = previous_position.y - radius;
-    double old_bottom = previous_position.y + radius;
-
-    double new_left = current_position.x - radius;
-    double new_right = current_position.x + radius;
-    double new_top = current_position.y - radius;
-    double new_bottom = current_position.y + radius;
-
+    double left = center.x - radius;
+    double right = center.x + radius;
+    double top = center.y - radius;
+    double bottom = center.y + radius;
     bool collision_detected = false;
-    for (int x = static_cast<int>(new_left); x <= new_right; x += Map::TILE_SIZE) {
-        for (int y = static_cast<int>(new_top); y <= new_bottom; y += Map::TILE_SIZE) {
-            if (map.isWallAt(x, y)) {
-                collision_detected = true;
-                std::cout << "Old top: " << old_top << " New top: " << new_top << std::endl;
+    for (int x = static_cast<int>(left); x <= right; x += Map::TILE_SIZE) {
+        for (int y = static_cast<int>(top); y <= bottom; y += Map::TILE_SIZE) {
+            const Tile& tile = map.getTile(x, y);
+            double penetration_x = std::clamp(center.x, tile.getLeft(), tile.getRight());
+            double penetration_y = std::clamp(center.y, tile.getTop(), tile.getBottom());
 
-                const Tile& tile = map.getTile(x, y);
-                if (old_right < tile.getLeft() && new_right >= tile.getLeft()) {
-                    hit_edge = GridEdge::LEFT;
-                } else if (old_left > tile.getRight() && new_left <= tile.getRight()) {
-                    hit_edge = GridEdge::RIGHT;
-                } else if (old_bottom < tile.getTop() && new_bottom >= tile.getTop()) {
-                    hit_edge = GridEdge::BOTTOM;
-                } else if (old_top > tile.getBottom() && new_top <= tile.getBottom()) {
-                    hit_edge = GridEdge::TOP;
+            if (tile.isWall() && center.euclidean(Vector2d(penetration_x, penetration_y)) < radius) {
+                collision_detected = true;
+
+                double overlap_x = radius - std::abs(center.x - penetration_x);
+                double overlap_y = radius - std::abs(center.y - penetration_y);
+
+                if (overlap_x < overlap_y) {
+                    if (center.x < tile.getLeft()) {
+                        hit_edge = GridEdge::LEFT;
+                    } else {
+                        hit_edge = GridEdge::RIGHT;
+                    }
+                } else {
+                    if (center.y < tile.getBottom()) {
+                        hit_edge = GridEdge::TOP;
+                    } else {
+                        hit_edge = GridEdge::BOTTOM;
+                    }
                 }
             }
         }
     }
-
-    std::cout << "Collision detected: " << collision_detected << std::endl;
-    std::cout << hit_edge.value << std::endl;
 
     return collision_detected;
 }

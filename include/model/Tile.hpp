@@ -19,6 +19,7 @@ public:
          float rectangle_height, TileType tile_type);
 
     [[nodiscard]] TileType getTileType() const;
+    [[nodiscard]] bool isWall() const;
 };
 
 #endif //TILE_HPP
