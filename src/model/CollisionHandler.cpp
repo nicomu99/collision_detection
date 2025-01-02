@@ -39,55 +39,34 @@ void CollisionHandler::handleCollision(Rectangle* rect, Rectangle* other_rect, V
 
 void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity,
                                        bool determine_rectangle_velocity) {
-    // ------------------------------------------------------------------------
-    // 1. Get current velocities and positions
-    // ------------------------------------------------------------------------
-    Vector2d vRect = rect->getVelocity(); // velocity of rectangle
-    Vector2d vCircle = circle->getVelocity(); // velocity of circle
+    Vector2d v_rect = rect->getVelocity();
+    Vector2d v_circle = circle->getVelocity();
 
-    Vector2d posRect = rect->getPosition(); // position of rectangle (e.g., center)
-    Vector2d posCircle = circle->getPosition(); // position of circle (center)
+    Vector2d pos_circle = circle->getPosition();
 
-    // ------------------------------------------------------------------------
-    // 2. Compute the collision normal
-    //    For a more realistic approach, find the actual contact normal.
-    //    Here we do a simple center-to-center vector from rectangle -> circle.
-    // ------------------------------------------------------------------------
-    Vector2d collisionNormal = posCircle - posRect;
-    collisionNormal /= collisionNormal.length(); // make it a unit vector
+    // Determine collision normal
+    double p_x = std::clamp(pos_circle.x, rect->getLeft(), rect->getRight());
+    double p_y = std::clamp(pos_circle.y, rect->getTop(), rect->getBottom());
+    Vector2d collision_point = Vector2d(p_x, p_y);
+    Vector2d collision_normal = pos_circle - collision_point;
+    collision_normal /= collision_normal.length(); // make it a unit vector
 
-    // ------------------------------------------------------------------------
-    // 3. Decompose velocities into normal & tangential components
-    // ------------------------------------------------------------------------
-    // Dot products with the normal
-    double vRect_n = vRect.dot(collisionNormal);
-    double vCircle_n = vCircle.dot(collisionNormal);
+    Vector2d v_rect_normal = collision_normal * v_rect.dot(collision_normal);
+    Vector2d v_circle_normal = collision_normal * v_circle.dot(collision_normal);
 
-    // Tangential components (subtract normal component from total velocity)
-    // vt = v - (v.n)n
-    Vector2d vRect_t = vRect - collisionNormal * vRect_n;
-    Vector2d vCircle_t = vCircle - collisionNormal * vCircle_n;
+    Vector2d v_rect_tangential = v_rect - v_rect_normal;
+    Vector2d v_circle_tangential = v_circle - v_circle_normal;
 
-    // ------------------------------------------------------------------------
-    // 4. Resolve collision (perfectly elastic, equal masses)
-    //    => The normal components just swap
-    // ------------------------------------------------------------------------
-    double vRect_n_prime = vCircle_n; // rectangle’s new normal velocity
-    double vCircle_n_prime = vRect_n; // circle’s new normal velocity
+    Vector2d v_rect_n_prime = v_circle_normal; // rectangle’s new normal velocity
+    Vector2d v_circle_n_prime = v_rect_normal; // circle’s new normal velocity
 
-    // ------------------------------------------------------------------------
-    // 5. Reconstruct the final velocities
-    // ------------------------------------------------------------------------
-    Vector2d vRectFinal = vRect_t + collisionNormal * vRect_n_prime;
-    Vector2d vCircleFinal = vCircle_t + collisionNormal * vCircle_n_prime;
+    Vector2d v_rect_new = v_rect_tangential + v_rect_n_prime;
+    Vector2d v_circle_new = v_circle_tangential + v_circle_n_prime;
 
-    // ------------------------------------------------------------------------
-    // 7. Update the 'velocity' output parameter as requested
-    // ------------------------------------------------------------------------
     if (determine_rectangle_velocity) {
-        velocity = vRectFinal;
+        velocity = v_rect_new;
     } else {
-        velocity = vCircleFinal;
+        velocity = v_circle_new;
     }
 }
 
