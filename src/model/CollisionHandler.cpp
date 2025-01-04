@@ -113,7 +113,6 @@ bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
                     continue;
                 }
 
-
                 double collision_size = overlap_x * overlap_y;
                 collision_detected = true;
                 if (collision_size > max_collision_size) {
@@ -150,6 +149,7 @@ bool CollisionHandler::isWallCollision(Circle* circle, const Map& map, GridEdge&
     double top = center.y - radius;
     double bottom = center.y + radius;
     bool collision_detected = false;
+    double max_collision_size = -0.1;
     for (int x = static_cast<int>(left); x <= right; x += Map::TILE_SIZE) {
         for (int y = static_cast<int>(top); y <= bottom; y += Map::TILE_SIZE) {
             const Tile& tile = map.getTile(x, y);
@@ -162,17 +162,22 @@ bool CollisionHandler::isWallCollision(Circle* circle, const Map& map, GridEdge&
                 double overlap_x = radius - std::abs(center.x - penetration_x);
                 double overlap_y = radius - std::abs(center.y - penetration_y);
 
-                if (overlap_x < overlap_y) {
-                    if (center.x < tile.getLeft()) {
-                        hit_edge = GridEdge::LEFT;
+                double collision_size = overlap_x * overlap_y;
+
+                if (collision_size > max_collision_size) {
+                    max_collision_size = collision_size;
+                    if (overlap_x < overlap_y) {
+                        if (center.x < tile.getLeft()) {
+                            hit_edge = GridEdge::LEFT;
+                        } else {
+                            hit_edge = GridEdge::RIGHT;
+                        }
                     } else {
-                        hit_edge = GridEdge::RIGHT;
-                    }
-                } else {
-                    if (center.y < tile.getBottom()) {
-                        hit_edge = GridEdge::TOP;
-                    } else {
-                        hit_edge = GridEdge::BOTTOM;
+                        if (center.y < tile.getBottom()) {
+                            hit_edge = GridEdge::TOP;
+                        } else {
+                            hit_edge = GridEdge::BOTTOM;
+                        }
                     }
                 }
             }
