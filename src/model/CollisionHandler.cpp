@@ -14,14 +14,32 @@
 #include "Tile.hpp"
 
 void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* other_rect, Vector2d& velocity) {
+    Vector2d v_rect = rect->getVelocity();
+    Vector2d v_other = other_rect->getVelocity();
+
     double overlap_x = std::min(rect->getRight(), other_rect->getRight()) - std::max(
                            rect->getLeft(), other_rect->getLeft());
     double overlap_y = std::min(rect->getBottom(), other_rect->getBottom()) - std::max(
                            rect->getTop(), other_rect->getTop());
 
     bool collide_on_x = overlap_x < overlap_y;
+
     Vector2d collision_normal;
-    if (collide_on_x) {
+
+    if (std::round(overlap_x * 1000.0) / 1000.0 == std::round(overlap_y * 1000.0) / 1000.0) {
+        if (std::abs(v_rect.x) > std::abs(v_rect.y) &&
+            std::abs(v_other.x) > std::abs(v_other.y)) {
+            if (rect->getRight() < other_rect->getRight())
+                collision_normal = Vector2d(-1, 0);
+            else
+                collision_normal = Vector2d(1, 0);
+        } else {
+            if (rect->getTop() < other_rect->getTop())
+                collision_normal = Vector2d(0, -1);
+            else
+                collision_normal = Vector2d(0, 1);
+        }
+    } else if (collide_on_x) {
         if (rect->getRight() < other_rect->getRight())
             collision_normal = Vector2d(-1, 0);
         else
@@ -33,7 +51,7 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
             collision_normal = Vector2d(0, 1);
     }
 
-    double normal_component = rect->getVelocity().dot(collision_normal);
+    double normal_component = v_rect.dot(collision_normal);
     velocity = velocity - collision_normal * normal_component * 2;
 }
 
