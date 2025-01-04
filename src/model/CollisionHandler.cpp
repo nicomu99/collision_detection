@@ -13,7 +13,7 @@
 #include "Circle.hpp"
 #include "Tile.hpp"
 
-void CollisionHandler::handleCollision(Rectangle* rect, Rectangle* other_rect, Vector2d& velocity) {
+void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* other_rect, Vector2d& velocity) {
     double overlap_x = std::min(rect->getRight(), other_rect->getRight()) - std::max(
                            rect->getLeft(), other_rect->getLeft());
     double overlap_y = std::min(rect->getBottom(), other_rect->getBottom()) - std::max(
@@ -37,7 +37,7 @@ void CollisionHandler::handleCollision(Rectangle* rect, Rectangle* other_rect, V
     velocity = velocity - collision_normal * normal_component * 2;
 }
 
-void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d& velocity,
+void CollisionHandler::handleCollision(const Rectangle* rect, const Circle* circle, Vector2d& velocity,
                                        bool determine_rectangle_velocity) {
     Vector2d v_rect = rect->getVelocity();
     Vector2d v_circle = circle->getVelocity();
@@ -70,7 +70,7 @@ void CollisionHandler::handleCollision(Rectangle* rect, Circle* circle, Vector2d
     }
 }
 
-void CollisionHandler::handleCollision(Circle* circle, Circle* other_circle, Vector2d& velocity) {
+void CollisionHandler::handleCollision(const Circle* circle, const Circle* other_circle, Vector2d& velocity) {
     Vector2d c1 = circle->getPosition();
     Vector2d c2 = other_circle->getPosition();
 
@@ -89,7 +89,7 @@ void CollisionHandler::handleCollision(Circle* circle, Circle* other_circle, Vec
     velocity = collision_normal * normal_component_other + tangential_velocity;
 }
 
-bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
+bool CollisionHandler::isWallCollision(const Rectangle* rect, const Map& map,
                                        GridEdge& hit_edge, Tile& collision_tile) {
     double top = rect->getTop();
     double bottom = rect->getBottom();
@@ -140,7 +140,7 @@ bool CollisionHandler::isWallCollision(Rectangle* rect, const Map& map,
     return collision_detected;
 }
 
-bool CollisionHandler::isWallCollision(Circle* circle, const Map& map, GridEdge& hit_edge, Tile& collision_tile) {
+bool CollisionHandler::isWallCollision(const Circle* circle, const Map& map, GridEdge& hit_edge, Tile& collision_tile) {
     double radius = circle->getRadius();
     Vector2d center = circle->getPosition();
 
@@ -187,7 +187,7 @@ bool CollisionHandler::isWallCollision(Circle* circle, const Map& map, GridEdge&
     return collision_detected;
 }
 
-double CollisionHandler::computeWallCollisionPosition(Rectangle* rect, const Tile& tile, GridEdge grid_edge,
+double CollisionHandler::computeWallCollisionPosition(const Rectangle* rect, const Tile& tile, GridEdge grid_edge,
                                                       double delta_time) {
     double collision_time = 0.0;
     Vector2d rect_velocity = rect->getVelocity();
@@ -217,7 +217,7 @@ double CollisionHandler::computeWallCollisionPosition(Rectangle* rect, const Til
     return collision_time;
 }
 
-void CollisionHandler::handleWallCollisions(Rectangle* rect, const Map& map, MoveResult& move_result,
+void CollisionHandler::handleWallCollisions(const Rectangle* rect, const Map& map, MoveResult& move_result,
                                             double delta_time) {
     Vector2d new_velocity = rect->getVelocity();
     GridEdge grid_edge = GridEdge::NONE;
@@ -234,7 +234,7 @@ void CollisionHandler::handleWallCollisions(Rectangle* rect, const Map& map, Mov
     move_result.setNewPosition(new_position);
 }
 
-void CollisionHandler::handleWallCollisions(Circle* circle, const Map& map, MoveResult& move_result,
+void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map, MoveResult& move_result,
                                             double delta_time) {
     Vector2d new_velocity = circle->getVelocity();
     GridEdge grid_edge = GridEdge::NONE;
