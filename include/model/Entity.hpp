@@ -23,8 +23,9 @@ public:
     int rotation;
     std::string id;
     MoveResult move_result;
+    double mass;
 
-    Entity(Vector2d position, int rotation, Vector2d velocity, double speed, std::string id);
+    Entity(Vector2d position, int rotation, Vector2d velocity, double speed, std::string id, double mass);
     virtual ~Entity() = default;
 
     [[nodiscard]] const Vector2d& getPosition() const;
@@ -34,6 +35,7 @@ public:
     [[nodiscard]] const Vector2d& getVelocity() const;
     [[nodiscard]] Vector2d getInterpolatedPosition(double alpha) const;
     [[nodiscard]] Vector2d getPositionAfterMove(Vector2d vector2d) const;
+    [[nodiscard]] double getMass() const;
 
     void setMoveResult(const MoveResult&);
     void setVelocity(Vector2d);

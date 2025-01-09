@@ -16,7 +16,7 @@ const Vector2d& MoveResult::getNewPosition() const {
 }
 
 void MoveResult::setUpdatedVelocity(Vector2d updated_velocity) {
-    updated_velocity.normalize();
+    // updated_velocity.normalize();
     this->updated_velocity = updated_velocity;
 }
 
