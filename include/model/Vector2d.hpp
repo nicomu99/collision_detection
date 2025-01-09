@@ -58,6 +58,10 @@ struct Vector2d {
         return *this;
     }
 
+    Vector2d operator-() const {
+        return {-x, -y};
+    }
+
     void to_normal() {
         double temp = x;
         x = -y;

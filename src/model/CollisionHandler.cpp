@@ -46,6 +46,8 @@ double CollisionHandler::computeOverlap(double min_a, double max_a, double min_b
 }
 
 void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* other_rect, MoveResult& move_result) {
+    std::cout << "=== New check ===" << std::endl;
+
     // Calculate the direction vector of the edge
     std::vector<Vector2d> edges;
     computeAxes(rect, edges);
@@ -69,21 +71,17 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
     Vector2d rect_pos = rect->getPosition();
     Vector2d direction = other_rect->getPosition() - rect_pos;
 
-    if (direction.x * mtv.x + direction.y * mtv.y < 0) {
-        if (mtv.x != 0) {
-            mtv.x = -mtv.x;
-        }
-        if(mtv.y != 0) {
-            mtv.y = -mtv.y;
-        }
+    if (direction.dot(mtv) < 0) {
+        mtv = -mtv;
     }
+    std::cout << "MTV: " << mtv.x << " " << mtv.y << std::endl;
 
     Vector2d translation = mtv * minimal_overlap / 2.0;
     Vector2d new_pos = rect_pos - translation;
     move_result.setNewPosition(new_pos);
 
-
     Vector2d v_rect = rect->getVelocity();
+    std::cout << "Rect velocity: " << v_rect.x << " " << v_rect.y << std::endl;
     Vector2d v_normal_rect = mtv * v_rect.dot(mtv);
     Vector2d v_tan_rect = v_rect - v_normal_rect;
 
