@@ -51,17 +51,12 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
     computeAxes(rect, edges);
     computeAxes(other_rect, edges);
 
-    bool colliding = true;
     double minimal_overlap = std::numeric_limits<double>::max();
     Vector2d mtv = edges[0];
     for (int i = 0; i < 4; i++) {
         double min_a, max_a, min_b, max_b;
         projectRectangleOntoAxis(rect, edges[i], min_a, max_a);
         projectRectangleOntoAxis(other_rect, edges[i], min_b, max_b);
-
-        if (!intervalsOverlap(min_a, max_a, min_b, max_b)) {
-            colliding = false;
-        }
 
         double overlap = computeOverlap(min_a, max_a, min_b, max_b);
         if (overlap < minimal_overlap) {
@@ -89,8 +84,6 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
 
 
     Vector2d v_rect = rect->getVelocity();
-    std::cout << "====" << std::endl;
-    std::cout << "Velocity before update: " << v_rect.x << " " << v_rect.y << std::endl;
     Vector2d v_normal_rect = mtv * v_rect.dot(mtv);
     Vector2d v_tan_rect = v_rect - v_normal_rect;
 
@@ -98,9 +91,6 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
     Vector2d v_normal_other = mtv * v_other.dot(mtv);
 
     Vector2d v_rect_new = v_normal_other + v_tan_rect;
-    std::cout << "MTV: " << mtv.x << " " << mtv.y << std::endl;
-    std::cout << "Velocity after update: " << v_rect_new.x << " " << v_rect_new.y << std::endl;
-
     move_result.setUpdatedVelocity(v_rect_new);
 }
 
