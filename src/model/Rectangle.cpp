@@ -115,8 +115,22 @@ void Rectangle::checkEntityCollisions(Entity* other_entity, MoveResult& move_res
 }
 
 bool Rectangle::isCollision(const Rectangle* rectangle) {
-    return this->getRight() > rectangle->getLeft() && this->getLeft() <= rectangle->getRight() &&
-       this->getBottom() > rectangle->getTop() && this->getTop() <= rectangle->getBottom();
+    std::vector<Vector2d> edges;
+    CollisionHandler::computeAxes(this, edges);
+    CollisionHandler::computeAxes(rectangle, edges);
+
+    bool colliding = true;
+    for (int i = 0; i < 4; i++) {
+        double min_a, max_a, min_b, max_b;
+        CollisionHandler::projectRectangleOntoAxis(this, edges[i], min_a, max_a);
+        CollisionHandler::projectRectangleOntoAxis(rectangle, edges[i], min_b, max_b);
+
+        if (!CollisionHandler::intervalsOverlap(min_a, max_a, min_b, max_b)) {
+            colliding = false;
+        }
+    }
+
+    return colliding;
 }
 
 bool Rectangle::isCollision(const Circle* circle) {

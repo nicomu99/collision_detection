@@ -13,46 +13,95 @@
 #include "Circle.hpp"
 #include "Tile.hpp"
 
-void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* other_rect, Vector2d& velocity) {
-    Vector2d v_rect = rect->getVelocity();
-    Vector2d v_other = other_rect->getVelocity();
+void CollisionHandler::projectRectangleOntoAxis(const Rectangle* rect, const Vector2d& axis, double& min, double& max) {
+    // Initialize min and max with the projection of the first vertex
+    const std::vector<Vector2d>& rect_corner_points = rect->getCornerPoints();
+    double projection = rect_corner_points[0].x * axis.x + rect_corner_points[0].y * axis.y;
+    min = max = projection;
 
-    double overlap_x = std::min(rect->getRight(), other_rect->getRight()) - std::max(
-                           rect->getLeft(), other_rect->getLeft());
-    double overlap_y = std::min(rect->getBottom(), other_rect->getBottom()) - std::max(
-                           rect->getTop(), other_rect->getTop());
+    // Loop through the remaining vertices
+    for (int i = 1; i < 4; ++i) {
+        projection = rect_corner_points[i].x * axis.x + rect_corner_points[i].y * axis.y;
+        if (projection < min) min = projection;
+        if (projection > max) max = projection;
+    }
+}
 
-    bool collide_on_x = overlap_x < overlap_y;
+void CollisionHandler::computeAxes(const Rectangle* rect, std::vector<Vector2d>& edges) {
+    const std::vector<Vector2d>& vertices = rect->getCornerPoints();
+    for (int i = 0; i < 2; i++) {
+        Vector2d edge = vertices[i] - vertices[i + 1];
+        edge.to_normal();
+        edge.normalize();
+        edges.push_back(edge);
+    }
+}
 
-    Vector2d collision_normal;
+bool CollisionHandler::intervalsOverlap(double min_a, double max_a, double min_b, double max_b) {
+    return max_a >= min_b && max_b >= min_a;
+}
 
-    if (std::round(overlap_x * 1000.0) / 1000.0 == std::round(overlap_y * 1000.0) / 1000.0) {
-        if (std::abs(v_rect.x) > std::abs(v_rect.y) &&
-            std::abs(v_other.x) > std::abs(v_other.y)) {
-            if (rect->getRight() < other_rect->getRight())
-                collision_normal = Vector2d(-1, 0);
-            else
-                collision_normal = Vector2d(1, 0);
-        } else {
-            if (rect->getTop() < other_rect->getTop())
-                collision_normal = Vector2d(0, -1);
-            else
-                collision_normal = Vector2d(0, 1);
+double CollisionHandler::computeOverlap(double min_a, double max_a, double min_b, double max_b) {
+    return std::min(max_a, max_b) - std::max(min_a, min_b);
+}
+
+void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* other_rect, MoveResult& move_result) {
+    // Calculate the direction vector of the edge
+    std::vector<Vector2d> edges;
+    computeAxes(rect, edges);
+    computeAxes(other_rect, edges);
+
+    bool colliding = true;
+    double minimal_overlap = std::numeric_limits<double>::max();
+    Vector2d mtv = edges[0];
+    for (int i = 0; i < 4; i++) {
+        double min_a, max_a, min_b, max_b;
+        projectRectangleOntoAxis(rect, edges[i], min_a, max_a);
+        projectRectangleOntoAxis(other_rect, edges[i], min_b, max_b);
+
+        if (!intervalsOverlap(min_a, max_a, min_b, max_b)) {
+            colliding = false;
         }
-    } else if (collide_on_x) {
-        if (rect->getRight() < other_rect->getRight())
-            collision_normal = Vector2d(-1, 0);
-        else
-            collision_normal = Vector2d(1, 0);
-    } else {
-        if (rect->getTop() < other_rect->getTop())
-            collision_normal = Vector2d(0, -1);
-        else
-            collision_normal = Vector2d(0, 1);
+
+        double overlap = computeOverlap(min_a, max_a, min_b, max_b);
+        if (overlap < minimal_overlap) {
+            mtv = edges[i];
+            minimal_overlap = overlap;
+        }
     }
 
-    double normal_component = v_rect.dot(collision_normal);
-    velocity = velocity - collision_normal * normal_component * 2;
+    // Only continue when there actually was a collision
+    Vector2d rect_pos = rect->getPosition();
+    Vector2d direction = other_rect->getPosition() - rect_pos;
+
+    if (direction.x * mtv.x + direction.y * mtv.y < 0) {
+        if (mtv.x != 0) {
+            mtv.x = -mtv.x;
+        }
+        if(mtv.y != 0) {
+            mtv.y = -mtv.y;
+        }
+    }
+
+    Vector2d translation = mtv * minimal_overlap / 2.0;
+    Vector2d new_pos = rect_pos - translation;
+    move_result.setNewPosition(new_pos);
+
+
+    Vector2d v_rect = rect->getVelocity();
+    std::cout << "====" << std::endl;
+    std::cout << "Velocity before update: " << v_rect.x << " " << v_rect.y << std::endl;
+    Vector2d v_normal_rect = mtv * v_rect.dot(mtv);
+    Vector2d v_tan_rect = v_rect - v_normal_rect;
+
+    Vector2d v_other = other_rect->getVelocity();
+    Vector2d v_normal_other = mtv * v_other.dot(mtv);
+
+    Vector2d v_rect_new = v_normal_other + v_tan_rect;
+    std::cout << "MTV: " << mtv.x << " " << mtv.y << std::endl;
+    std::cout << "Velocity after update: " << v_rect_new.x << " " << v_rect_new.y << std::endl;
+
+    move_result.setUpdatedVelocity(v_rect_new);
 }
 
 void CollisionHandler::handleCollision(const Rectangle* rect, const Circle* circle, Vector2d& velocity,
@@ -275,8 +324,7 @@ void CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_enti
     Vector2d velocity = rect->getVelocity();
     if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
         if (rect->isCollision(other_rect)) {
-            handleCollision(rect, other_rect, velocity);
-            move_result.setUpdatedVelocity(velocity);
+            handleCollision(rect, other_rect, move_result);
         }
     } else if (auto circle = dynamic_cast<Circle*>(other_entity)) {
         if (rect->isCollision(circle)) {

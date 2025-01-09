@@ -58,9 +58,22 @@ struct Vector2d {
         return *this;
     }
 
+    void to_normal() {
+        double temp = x;
+        x = -y;
+        y = temp;
+    }
+
+    void normalize() {
+        double length = this->length();
+        if (length == 0.0) {
+            length = 1.0;
+        }
+        x /= length;
+        y /= length;
+    }
+
     Vector2d operator*(const Vector2d& other) const {
-        // Define how multiplication is handled.
-        // Example: element-wise multiplication
         return {this->x * other.x, this->y * other.y};
     }
 

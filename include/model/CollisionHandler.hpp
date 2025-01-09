@@ -18,7 +18,12 @@ class Rectangle;
 
 class CollisionHandler {
 public:
-    static void handleCollision(const Rectangle* rect, const Rectangle* rectangle, Vector2d& velocity);
+    static void projectRectangleOntoAxis(const Rectangle* rect, const Vector2d& axis, double& min, double& max);
+    static void computeAxes(const Rectangle* rect, std::vector<Vector2d>& edges);
+    static bool intervalsOverlap(double min_a, double max_a, double min_b, double max_b);
+    static double computeOverlap(double min_a, double max_a, double min_b, double max_b);
+
+    static void handleCollision(const Rectangle* rect, const Rectangle* rectangle, MoveResult& move_result);
     static void handleCollision(const Rectangle* rect, const Circle* circle, Vector2d& velocity, bool determine_rectangle_velocity);
     static void handleCollision(const Circle* circle, const Circle* other_circle, Vector2d& velocity);
 
