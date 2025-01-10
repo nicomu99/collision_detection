@@ -5,6 +5,7 @@
 #ifndef VECTOR2D_HPP
 #define VECTOR2D_HPP
 #include <cmath>
+#include <ostream>
 
 struct Vector2d {
     double x;
@@ -104,5 +105,10 @@ struct Vector2d {
         return sqrt(pow(x, 2) + pow(y, 2));
     }
 };
+
+inline std::ostream& operator<<(std::ostream& o, const Vector2d vector) {
+    o << "Value x: " << vector.x << ", Value y: " << vector.y;
+    return o;
+}
 
 #endif //VECTOR2D_HPP
