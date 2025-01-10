@@ -8,8 +8,10 @@
 
 class MoveResult {
     bool is_collision;
-    Vector2d updated_velocity;
+    Vector2d old_position;
+    Vector2d old_velocity;
     Vector2d new_position;
+    Vector2d updated_velocity;
 
 public:
     MoveResult();
