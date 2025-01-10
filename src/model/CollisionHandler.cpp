@@ -231,14 +231,18 @@ bool CollisionHandler::isWallCollision(const Circle* circle, const Map& map, Gri
                     max_collision_size = collision_size;
                     if (overlap_x < overlap_y) {
                         if (center.x < tile.getLeft()) {
+                            std::cout << "LEFT" << std::endl;
                             hit_edge = GridEdge::LEFT;
                         } else {
+                            std::cout << "RIGHT" << std::endl;
                             hit_edge = GridEdge::RIGHT;
                         }
                     } else {
                         if (center.y < tile.getBottom()) {
+                            std::cout << "TOP" << std::endl;
                             hit_edge = GridEdge::TOP;
                         } else {
+                            std::cout << "BOTTOM" << std::endl;
                             hit_edge = GridEdge::BOTTOM;
                         }
                     }
@@ -267,7 +271,7 @@ double CollisionHandler::computeWallCollisionPosition(const Rectangle* rect, con
             break;
         case GridEdge::BOTTOM:
             if (rect_velocity.y < 0)
-                collision_time = (tile.getTop() - rect->getBottom()) / (delta_time * rect_velocity.y);
+                collision_time = (tile.getBottom() - rect->getTop()) / (delta_time * rect_velocity.y);
             break;
         case GridEdge::TOP:
             if (rect_velocity.y > 0)
@@ -297,22 +301,54 @@ void CollisionHandler::handleWallCollisions(const Rectangle* rect, const Map& ma
     move_result.setNewPosition(new_position);
 }
 
-void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map, MoveResult& move_result,
-                                            double delta_time) {
-    Vector2d new_velocity = circle->getVelocity();
-    GridEdge grid_edge = GridEdge::NONE;
-    Vector2d new_position = circle->getPosition();
+double CollisionHandler::computeWallCollisionPosition(const Circle* circle, const Tile& tile, GridEdge grid_edge,
+                                                      double delta_time) {
+    Vector2d circle_pos = circle->getPosition();
+    double radius = circle->getRadius();
+    Vector2d circle_velocity = circle->getVelocity();
+    double speed = circle->getSpeed();
+    circle_velocity *= speed * delta_time;
 
-    if (Tile collision_tile; isWallCollision(circle, map, grid_edge, collision_tile)) {
-        Vector2d wall_normal = grid_edge.toNormal();
-        new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
-        // double collision_time = computeWallCollisionPosition(circle, collision_tile, grid_edge, delta_time);
-        double collision_time = 1;
-        new_position = new_position + new_velocity * delta_time * collision_time;
+    double collision_time = 0.0;
+    switch (grid_edge.value) {
+        case GridEdge::LEFT:
+            collision_time = (tile.getLeft() + radius - circle_pos.x) / circle_velocity.x;
+        break;
+        case GridEdge::RIGHT:
+            if (circle_velocity.x < 0)
+                collision_time = (tile.getRight() - radius - circle_pos.x) / circle_velocity.x;
+        break;
+        case GridEdge::BOTTOM:
+            if (circle_velocity.y < 0)
+                collision_time = (tile.getBottom() - radius - circle_pos.y) / circle_velocity.y;
+        break;
+        case GridEdge::TOP:
+            if (circle_velocity.y > 0)
+                collision_time = (tile.getTop() + radius - circle_pos.y) / circle_velocity.y;
+        break;
+        default:
+            break;
     }
 
-    move_result.setUpdatedVelocity(new_velocity);
-    move_result.setNewPosition(new_position);
+    return collision_time;
+}
+
+void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map, MoveResult& move_result,
+                                            double delta_time) {
+    Vector2d circle_position = circle->getPosition();
+    Vector2d circle_velocity = circle->getVelocity();
+
+    GridEdge grid_edge = GridEdge::NONE;
+    if (Tile collision_tile; isWallCollision(circle, map, grid_edge, collision_tile)) {
+        Vector2d wall_normal = grid_edge.toNormal();
+        double collision_time = computeWallCollisionPosition(circle, collision_tile, grid_edge, delta_time);
+        circle_position = circle_position + circle_velocity * delta_time * collision_time;
+        circle_velocity = circle_velocity - circle_velocity * wall_normal * wall_normal * 2;
+        std::cout << "New Position: " << circle_position << std::endl;
+    }
+
+    move_result.setUpdatedVelocity(circle_velocity);
+    move_result.setNewPosition(circle_position);
 }
 
 void CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result) {

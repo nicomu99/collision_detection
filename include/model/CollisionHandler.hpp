@@ -36,6 +36,7 @@ public:
     static double computeWallCollisionPosition(const Rectangle* rect, const Tile& tile, GridEdge grid_edge, double delta_time);
 
     static void handleWallCollisions(const Rectangle* rect, const Map& map, MoveResult& move_result, double delta_time);
+    static double computeWallCollisionPosition(const Circle* circle, const Tile& tile, GridEdge grid_edge, double delta_time);
     static void handleWallCollisions(const Circle* circle, const Map& map, MoveResult& move_result, double delta_time);
 
     static void checkCollisions(Entity* entity, const Map& map, const std::vector<std::unique_ptr<Entity>>& vector, double delta_time);
