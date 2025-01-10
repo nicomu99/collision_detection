@@ -29,7 +29,7 @@ void CollisionHandler::projectRectangleOntoAxis(const Rectangle* rect, const Vec
 
 void CollisionHandler::computeAxes(const Rectangle* rect, std::vector<Vector2d>& edges) {
     const std::vector<Vector2d>& vertices = rect->getCornerPoints();
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 4; i++) {
         Vector2d edge = vertices[i] - vertices[i + 1];
         edge.to_normal();
         edge.normalize();
@@ -46,8 +46,6 @@ double CollisionHandler::computeOverlap(double min_a, double max_a, double min_b
 }
 
 void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* other_rect, MoveResult& move_result) {
-    std::cout << "=== New check ===" << std::endl;
-
     // Calculate the direction vector of the edge
     std::vector<Vector2d> edges;
     computeAxes(rect, edges);
@@ -67,28 +65,27 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
         }
     }
 
-    // Only continue when there actually was a collision
     Vector2d rect_pos = rect->getPosition();
-    Vector2d direction = other_rect->getPosition() - rect_pos;
-
+    Vector2d other_pos = other_rect->getPosition();
+    Vector2d direction = other_pos - rect_pos;
     if (direction.dot(mtv) < 0) {
         mtv = -mtv;
     }
-    std::cout << "MTV: " << mtv.x << " " << mtv.y << std::endl;
 
     Vector2d translation = mtv * minimal_overlap / 2.0;
     Vector2d new_pos = rect_pos - translation;
     move_result.setNewPosition(new_pos);
 
     Vector2d v_rect = rect->getVelocity();
-    std::cout << "Rect velocity: " << v_rect.x << " " << v_rect.y << std::endl;
     Vector2d v_normal_rect = mtv * v_rect.dot(mtv);
     Vector2d v_tan_rect = v_rect - v_normal_rect;
 
     Vector2d v_other = other_rect->getVelocity();
     Vector2d v_normal_other = mtv * v_other.dot(mtv);
 
-    Vector2d v_rect_new = v_normal_other + v_tan_rect;
+    double rect_mass = rect->getMass();
+    double other_mass = other_rect->getMass();
+    Vector2d v_rect_new = (v_normal_rect * (rect_mass - other_mass) + v_normal_other * other_mass * 2) / (rect_mass + other_mass) + v_tan_rect;
     move_result.setUpdatedVelocity(v_rect_new);
 }
 
@@ -278,7 +275,9 @@ void CollisionHandler::handleWallCollisions(const Rectangle* rect, const Map& ma
     GridEdge grid_edge = GridEdge::NONE;
     Vector2d new_position = rect->getPosition();
 
-    if (Tile collision_tile; isWallCollision(rect, map, grid_edge, collision_tile)) {
+    Tile collision_tile;
+    bool wall_collision = isWallCollision(rect, map, grid_edge, collision_tile);
+    if (wall_collision) {
         Vector2d wall_normal = grid_edge.toNormal();
         new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
         double collision_time = computeWallCollisionPosition(rect, collision_tile, grid_edge, delta_time);
@@ -295,7 +294,9 @@ void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map
     GridEdge grid_edge = GridEdge::NONE;
     Vector2d new_position = circle->getPosition();
 
-    if (Tile collision_tile; isWallCollision(circle, map, grid_edge, collision_tile)) {
+    Tile collision_tile;
+    bool wall_collision = isWallCollision(circle, map, grid_edge, collision_tile);
+    if (wall_collision) {
         Vector2d wall_normal = grid_edge.toNormal();
         new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
         // double collision_time = computeWallCollisionPosition(circle, collision_tile, grid_edge, delta_time);
