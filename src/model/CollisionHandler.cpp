@@ -85,7 +85,8 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Rectangle* o
 
     double rect_mass = rect->getMass();
     double other_mass = other_rect->getMass();
-    Vector2d v_rect_new = (v_normal_rect * (rect_mass - other_mass) + v_normal_other * other_mass * 2) / (rect_mass + other_mass) + v_tan_rect;
+    Vector2d v_rect_new = (v_normal_rect * (rect_mass - other_mass) + v_normal_other * other_mass * 2) / (
+                              rect_mass + other_mass) + v_tan_rect;
     move_result.setUpdatedVelocity(v_rect_new);
 }
 
@@ -103,14 +104,24 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Circle* circ
     Vector2d collision_normal = pos_circle - collision_point;
     collision_normal /= collision_normal.length(); // make it a unit vector
 
-    Vector2d v_rect_normal = collision_normal * v_rect.dot(collision_normal);
-    Vector2d v_circle_normal = collision_normal * v_circle.dot(collision_normal);
+    double v_rect_normal_mag = v_rect.dot(collision_normal);
+    double v_circle_normal_mag = v_circle.dot(collision_normal);
+
+    Vector2d v_rect_normal = collision_normal * v_rect_normal_mag;
+    Vector2d v_circle_normal = collision_normal * v_circle_normal_mag;
 
     Vector2d v_rect_tangential = v_rect - v_rect_normal;
     Vector2d v_circle_tangential = v_circle - v_circle_normal;
 
-    Vector2d v_rect_n_prime = v_circle_normal; // rectangle’s new normal velocity
-    Vector2d v_circle_n_prime = v_rect_normal; // circle’s new normal velocity
+    double m_rect = rect->getMass();
+    double m_circle = circle->getMass();
+    double new_rect_normal_mag = ((m_rect - m_circle) * v_rect_normal_mag + 2.0 * m_circle * v_circle_normal_mag)
+                                 / (m_rect + m_circle);
+    double new_circle_normal_mag = (2.0 * m_rect * v_rect_normal_mag + (m_circle - m_rect) * v_circle_normal_mag)
+                                   / (m_rect + m_circle);
+
+    Vector2d v_rect_n_prime = collision_normal * new_rect_normal_mag;
+    Vector2d v_circle_n_prime = collision_normal * new_circle_normal_mag;
 
     Vector2d v_rect_new = v_rect_tangential + v_rect_n_prime;
     Vector2d v_circle_new = v_circle_tangential + v_circle_n_prime;
@@ -275,9 +286,7 @@ void CollisionHandler::handleWallCollisions(const Rectangle* rect, const Map& ma
     GridEdge grid_edge = GridEdge::NONE;
     Vector2d new_position = rect->getPosition();
 
-    Tile collision_tile;
-    bool wall_collision = isWallCollision(rect, map, grid_edge, collision_tile);
-    if (wall_collision) {
+    if (Tile collision_tile; isWallCollision(rect, map, grid_edge, collision_tile)) {
         Vector2d wall_normal = grid_edge.toNormal();
         new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
         double collision_time = computeWallCollisionPosition(rect, collision_tile, grid_edge, delta_time);
@@ -294,9 +303,7 @@ void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map
     GridEdge grid_edge = GridEdge::NONE;
     Vector2d new_position = circle->getPosition();
 
-    Tile collision_tile;
-    bool wall_collision = isWallCollision(circle, map, grid_edge, collision_tile);
-    if (wall_collision) {
+    if (Tile collision_tile; isWallCollision(circle, map, grid_edge, collision_tile)) {
         Vector2d wall_normal = grid_edge.toNormal();
         new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
         // double collision_time = computeWallCollisionPosition(circle, collision_tile, grid_edge, delta_time);
