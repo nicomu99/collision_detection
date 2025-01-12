@@ -366,7 +366,6 @@ void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map
 
 void CollisionHandler::checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result) {
     // First resolve what type of entity it is
-    Vector2d velocity = rect->getVelocity();
     if (auto other_rect = dynamic_cast<Rectangle*>(other_entity)) {
         if (rect->isCollision(other_rect)) {
             handleCollision(rect, other_rect, move_result);
