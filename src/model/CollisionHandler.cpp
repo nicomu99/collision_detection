@@ -103,19 +103,6 @@ void CollisionHandler::handleCollision(const Rectangle* rect, const Circle* circ
     Vector2d collision_point = Vector2d(p_x, p_y);
     Vector2d collision_normal = pos_circle - collision_point;
     collision_normal /= collision_normal.length(); // make it a unit vector
-    if(rect->id == "Square 2" && determine_rectangle_velocity) {
-        std::cout << "++++ New Check ++++" << std::endl;
-        std::cout << "Rect Velocity, before update: " << v_rect << std::endl;
-        std::cout << "Circ Velocity, before update: " << v_circle << std::endl;
-        std::cout << "Rect Position, before update: " << rect->getPosition() << std::endl;
-        std::cout << "Circ Position, before update: " << pos_circle << std::endl;
-        std::cout << "Collision point: " << collision_point << std::endl;
-        std::cout << "Rect top: " << rect->getTop() << std::endl;
-        std::cout << "Rect bottom: " << rect->getBottom() << std::endl;
-        std::cout << "Rect left: " << rect->getLeft() << std::endl;
-        std::cout << "Rect right: " << rect->getRight() << std::endl;
-        std::cout << "Collision normal: " << collision_normal << std::endl;
-    }
 
     // Determine new velocity
     double v_rect_normal_mag = v_rect.dot(collision_normal);
@@ -321,7 +308,7 @@ void CollisionHandler::handleWallCollisions(const Rectangle* rect, const Map& ma
         Vector2d wall_normal = grid_edge.toNormal();
         new_velocity = new_velocity - (new_velocity * wall_normal) * wall_normal * 2;
         double collision_time = computeWallCollisionPosition(rect, collision_tile, grid_edge, delta_time);
-        new_position = new_position + new_velocity * delta_time * collision_time;
+        new_position = new_position - new_velocity * delta_time * collision_time;
     }
 
     move_result.setUpdatedVelocity(new_velocity);
@@ -369,7 +356,7 @@ void CollisionHandler::handleWallCollisions(const Circle* circle, const Map& map
     if (Tile collision_tile; isWallCollision(circle, map, grid_edge, collision_tile)) {
         Vector2d wall_normal = grid_edge.toNormal();
         double collision_time = computeWallCollisionPosition(circle, collision_tile, grid_edge, delta_time);
-        circle_position = circle_position + circle_velocity * delta_time * collision_time;
+        circle_position = circle_position - circle_velocity * delta_time * collision_time;
         circle_velocity = circle_velocity - circle_velocity * wall_normal * wall_normal * 2;
     }
 
