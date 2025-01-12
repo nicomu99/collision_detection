@@ -229,6 +229,7 @@ bool CollisionHandler::isWallCollision(const Circle* circle, const Map& map, Gri
 
                 if (collision_size > max_collision_size) {
                     max_collision_size = collision_size;
+                    collision_tile = tile;
                     if (overlap_x < overlap_y) {
                         if (center.x < tile.getLeft()) {
                             std::cout << "LEFT" << std::endl;
