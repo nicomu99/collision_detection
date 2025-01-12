@@ -24,7 +24,7 @@ public:
     static double computeOverlap(double min_a, double max_a, double min_b, double max_b);
 
     static void handleCollision(const Rectangle* rect, const Rectangle* rectangle, MoveResult& move_result);
-    static void handleCollision(const Rectangle* rect, const Circle* circle, Vector2d& velocity, bool determine_rectangle_velocity);
+    static void handleCollision(const Rectangle* rect, const Circle* circle, MoveResult& move_result, bool determine_rectangle_velocity);
     static void handleCollision(const Circle* circle, const Circle* other_circle, Vector2d& velocity);
 
     static void checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result);
