@@ -7,38 +7,15 @@
 
 Map::Map() : map(ROWS, std::vector<Tile>(COLS)) {
     constexpr auto size = static_cast<double>(TILE_SIZE);
-    const auto top_tile = Tile({static_cast<double>(Constants::SCREEN_WIDTH) / 2, static_cast<double>(TILE_SIZE) / 2},
-                               0, {0, 0}, 0, Constants::SCREEN_WIDTH, TILE_SIZE, WALL);
-    const auto bottom_tile = Tile({
-                                      static_cast<double>(Constants::SCREEN_WIDTH) / 2,
-                                      Constants::SCREEN_HEIGHT - static_cast<double>(TILE_SIZE) / 2
-                                  },
-                                  0, {0, 0}, 0, Constants::SCREEN_WIDTH, TILE_SIZE, WALL);
-    const auto left_tile = Tile({
-                                    static_cast<double>(TILE_SIZE) / 2,
-                                    static_cast<double>(Constants::SCREEN_HEIGHT) / 2
-                                },
-                                0, {0, 0}, 0, TILE_SIZE, Constants::SCREEN_HEIGHT, WALL);
-    const auto right_tile = Tile({
-                                     static_cast<double>(Constants::SCREEN_WIDTH) - static_cast<double>(TILE_SIZE) / 2,
-                                     static_cast<double>(Constants::SCREEN_HEIGHT) / 2
-                                 },
-                                 0, {0, 0}, 0, TILE_SIZE, Constants::SCREEN_HEIGHT, WALL);
     for (int row = 0; row < ROWS; ++row) {
         for (int col = 0; col < COLS; ++col) {
             double pos_x = (col * size) + size / 2.0;
             double pos_y = (row * size) + size / 2.0;
-            if (row == 0) {
-                map[row][col] = top_tile;
-            } else if (row == ROWS - 1) {
-                map[row][col] = bottom_tile;
-            } else if (col == 0) {
-                map[row][col] = left_tile;
-            } else if (col == COLS - 1) {
-                map[row][col] = right_tile;
-            } else {
-                map[row][col] = Tile({pos_x, pos_y}, 0, {0, 0}, 0, TILE_SIZE, TILE_SIZE, GRASS);
+            TileType tile_type = GRASS;
+            if (row == 0 || row == ROWS - 1 || col == 0 || col == COLS - 1) {
+                tile_type = WALL;
             }
+            map[row][col] = Tile({pos_x, pos_y}, 0, {0, 0}, 0, TILE_SIZE, TILE_SIZE, tile_type);
         }
     }
 }
