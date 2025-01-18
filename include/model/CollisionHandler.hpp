@@ -30,10 +30,10 @@ public:
     static void checkEntityCollisions(Rectangle* rect, Entity* other_entity, MoveResult& move_result);
     static void checkEntityCollisions(Circle* rect, Entity* other_entity, MoveResult& move_result);
 
-    static bool isWallCollision(const Rectangle* rect, const Map& map, GridEdge& hit_edge, Tile& collision_tile);
+    static bool isWallCollision(const Rectangle* rect, const Map& map, Vector2d& collision_normal, Tile& collision_tile);
     static bool isWallCollision(const Circle* rect, const Map& map, Vector2d& wall_normal, Tile& collision_tile);
 
-    static double computeWallCollisionPosition(const Rectangle* rect, const Tile& tile, GridEdge grid_edge, double delta_time);
+    static double computeWallCollisionPosition(const Rectangle* rect, const Tile& tile, Vector2d collision_normal, double delta_time);
 
     static void handleWallCollisions(const Rectangle* rect, const Map& map, MoveResult& move_result, double delta_time);
     static double computeWallCollisionPosition(const Circle* circle, const Tile& tile, Vector2d wall_normal, double delta_time);
