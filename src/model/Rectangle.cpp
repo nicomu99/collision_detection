@@ -10,6 +10,7 @@
 #include "Circle.hpp"
 #include "CollisionHandler.hpp"
 #include "Constants.hpp"
+#include "RectangleWallCollision.hpp"
 
 Rectangle::Rectangle()
     : Entity({0, 0}, 0, {0, 0}, 0, "no_id", 0), width(0),
@@ -107,7 +108,7 @@ void Rectangle::revertMove() {
 }
 
 void Rectangle::handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) {
-    CollisionHandler::handleWallCollisions(this, map, move_result, delta_time);
+    RectangleWallCollision::handleWallCollisions(this, map, move_result, delta_time);
 }
 
 void Rectangle::checkEntityCollisions(Entity* other_entity, MoveResult& move_result) {

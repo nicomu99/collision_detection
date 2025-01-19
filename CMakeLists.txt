@@ -41,6 +41,8 @@ add_executable(collision_detection main.cpp
         src/model/Circle.cpp
         include/model/CircleWallCollision.hpp
         include/model/CircleWallCollision.hpp
-        src/model/CircleWallCollision.cpp)
+        src/model/CircleWallCollision.cpp
+        include/model/RectangleWallCollision.hpp
+        src/model/RectangleWallCollision.cpp)
 
 target_link_libraries(collision_detection ${SDL3_LIBRARIES})
