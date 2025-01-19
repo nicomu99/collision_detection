@@ -33,12 +33,14 @@ add_executable(collision_detection main.cpp
         include/model/Tile.hpp
         src/model/Tile.cpp
         include/Constants.hpp
-        include/model/GridEdge.hpp
         include/model/CollisionHandler.hpp
         src/model/CollisionHandler.cpp
         include/model/MoveResult.hpp
         src/model/MoveResult.cpp
         include/model/Circle.hpp
-        src/model/Circle.cpp)
+        src/model/Circle.cpp
+        include/model/CircleWallCollision.hpp
+        include/model/CircleWallCollision.hpp
+        src/model/CircleWallCollision.cpp)
 
 target_link_libraries(collision_detection ${SDL3_LIBRARIES})

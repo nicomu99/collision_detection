@@ -3,6 +3,7 @@
 //
 #include "Circle.hpp"
 
+#include "CircleWallCollision.hpp"
 #include "CollisionHandler.hpp"
 #include "Rectangle.hpp"
 
@@ -19,7 +20,7 @@ double Circle::getRadius() const {
 }
 
 void Circle::handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) {
-    CollisionHandler::handleWallCollisions(this, map, move_result, delta_time);
+    CircleWallCollision::handleWallCollisions(this, map, move_result, delta_time);
 }
 
 void Circle::checkEntityCollisions(Entity* other_entity, MoveResult& move_result) {
