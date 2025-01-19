@@ -18,6 +18,9 @@ public:
     void handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) override;
     void checkEntityCollisions(Entity* other_entity, MoveResult& move_result) override;
 
+    void handleCollision(Circle* circle, MoveResult& move_result) override;
+    void handleCollision(Rectangle* rectangle, MoveResult& move_result) override;
+
     bool isCollision(const Rectangle* rectangle) override;
     bool isCollision(const Circle* circle) override;
 };

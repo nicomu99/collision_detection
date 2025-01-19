@@ -3,9 +3,11 @@
 //
 #include "Circle.hpp"
 
+#include "CircleCircleCollision.hpp"
 #include "CircleWallCollision.hpp"
 #include "CollisionHandler.hpp"
 #include "Rectangle.hpp"
+#include "RectangleCircleCollision.hpp"
 
 Circle::Circle()
     : Entity({0, 0}, 0, {0, 0}, 0, "no_id", 0), radius(0) {
@@ -24,7 +26,19 @@ void Circle::handleWallCollisions(const Map& map, MoveResult& move_result, doubl
 }
 
 void Circle::checkEntityCollisions(Entity* other_entity, MoveResult& move_result) {
+    // Visitor pattern to determine the type of the object the collision has to be resolved for
     CollisionHandler::checkEntityCollisions(this, other_entity, move_result);
+}
+
+void Circle::handleCollision(Circle* circle, MoveResult& move_result) {
+    // Visitor pattern to determine the type of the object that collides with the object for which the collision is resolved
+    CircleCircleCollision::handleCollision(circle, this, move_result);
+}
+
+void Circle::handleCollision(Rectangle* rectangle, MoveResult& move_result) {
+    // Visitor pattern -> this function gets called when the velocity of the rectangle has to be computed
+    // this is why counter-intuitively, determine_rectangle_velocity is true
+    RectangleCircleCollision::handleCollision(rectangle, this, move_result, true);
 }
 
 bool Circle::isCollision(const Rectangle* rectangle) {

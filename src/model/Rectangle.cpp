@@ -10,6 +10,8 @@
 #include "Circle.hpp"
 #include "CollisionHandler.hpp"
 #include "Constants.hpp"
+#include "RectangleCircleCollision.hpp"
+#include "RectangleRectangleCollision.hpp"
 #include "RectangleWallCollision.hpp"
 
 Rectangle::Rectangle()
@@ -112,21 +114,33 @@ void Rectangle::handleWallCollisions(const Map& map, MoveResult& move_result, do
 }
 
 void Rectangle::checkEntityCollisions(Entity* other_entity, MoveResult& move_result) {
+    // Visitor pattern to determine the type of the object the collision is resolved for
     CollisionHandler::checkEntityCollisions(this, other_entity, move_result);
+}
+
+void Rectangle::handleCollision(Circle* circle, MoveResult& move_result) {
+    // Visitor pattern -> this function gets called when the velocity of the circle has to be computed
+    // this is why counter-intuitively, determine_rectangle_velocity is false
+    RectangleCircleCollision::handleCollision(this, circle, move_result, false);
+}
+
+void Rectangle::handleCollision(Rectangle* rectangle, MoveResult& move_result) {
+    // Visitor pattern to determine the type of the object that collides with the object for which the collision is resolved
+    RectangleRectangleCollision::handleCollision(rectangle, this, move_result);
 }
 
 bool Rectangle::isCollision(const Rectangle* rectangle) {
     std::vector<Vector2d> edges;
-    CollisionHandler::computeAxes(this, edges);
-    CollisionHandler::computeAxes(rectangle, edges);
+    RectangleRectangleCollision::computeAxes(this, edges);
+    RectangleRectangleCollision::computeAxes(rectangle, edges);
 
     bool colliding = true;
     for (int i = 0; i < 4; i++) {
         double min_a, max_a, min_b, max_b;
-        CollisionHandler::projectRectangleOntoAxis(this, edges[i], min_a, max_a);
-        CollisionHandler::projectRectangleOntoAxis(rectangle, edges[i], min_b, max_b);
+        RectangleRectangleCollision::projectRectangleOntoAxis(this, edges[i], min_a, max_a);
+        RectangleRectangleCollision::projectRectangleOntoAxis(rectangle, edges[i], min_b, max_b);
 
-        if (!CollisionHandler::intervalsOverlap(min_a, max_a, min_b, max_b)) {
+        if (!RectangleRectangleCollision::intervalsOverlap(min_a, max_a, min_b, max_b)) {
             colliding = false;
         }
     }

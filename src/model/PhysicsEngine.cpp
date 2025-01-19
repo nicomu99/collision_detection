@@ -32,7 +32,7 @@ void PhysicsEngine::manipulateEntities(std::vector<std::unique_ptr<Entity> >& en
 
     // Then check move consequences
     for (auto& entity: entities) {
-        CollisionHandler::checkCollisions(entity.get(), map, entities, delta_time);
+        CollisionHandler::resolveCollisions(entity.get(), map, entities, delta_time);
     }
 
     // Overwrite move

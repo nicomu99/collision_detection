@@ -48,6 +48,9 @@ public:
     virtual void handleWallCollisions(const Map& map, MoveResult& move_result, double delta_time) = 0;
     virtual void checkEntityCollisions(Entity* other_entity, MoveResult& move_result) = 0;
 
+    virtual void handleCollision(Circle* circle, MoveResult& move_result) = 0;
+    virtual void handleCollision(Rectangle* rectangle, MoveResult& move_result) = 0;
+
     virtual bool isCollision(const Rectangle* rectangle) = 0;
     virtual bool isCollision(const Circle* circle) = 0;
 };

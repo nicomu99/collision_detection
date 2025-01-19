@@ -15,6 +15,10 @@ const Vector2d& MoveResult::getUpdatedVelocity() const {
     return updated_velocity;
 }
 
+Vector2d& MoveResult::getUpdatedVelocity() {
+    return updated_velocity;
+}
+
 const Vector2d& MoveResult::getNewPosition() const {
     return new_position;
 }

@@ -18,6 +18,7 @@ public:
     MoveResult(Vector2d velocity, Vector2d position);
 
     [[nodiscard]] const Vector2d& getUpdatedVelocity() const;
+    [[nodiscard]] Vector2d& getUpdatedVelocity();
     [[nodiscard]] const Vector2d& getNewPosition() const;
 
     void setUpdatedVelocity(Vector2d updated_velocity);
